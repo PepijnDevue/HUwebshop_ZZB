@@ -1,5 +1,4 @@
 import pymongo
-import re
 
 client = pymongo.MongoClient('mongodb://localhost:27017')
 
