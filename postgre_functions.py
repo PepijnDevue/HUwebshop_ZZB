@@ -11,8 +11,11 @@ def open_postgre():
     password_file = open('password.txt')
     password = password_file.readline()
 
+    # write your db name here
+    db_name = 'HUwebshop_Pepijn'
+
     # create a connection
-    connection = psycopg2.connect(f'dbname=HUwebshop_Pepijn user=postgres password={password}')
+    connection = psycopg2.connect(f'dbname={db_name} user=postgres password={password}')
 
     # create a cursor
     cursor = connection.cursor()
@@ -36,6 +39,20 @@ def products_to_postgre(cursor, products):
         # use %s to prevent errors with names like ' L 'Oreal '
         value_string = ', '.join(['%s' for _ in val_list])
         cursor.execute(f"INSERT INTO product ({key_string}) VALUES ({value_string})", val_list)
+
+def profiles_to_postgre(cursor, profiles):
+    """
+    saves all fitted profile information to the postgre database
+
+    cursor: the postgre cursor
+    products: a list of dicts containing the fitted profile info
+    """
+    for profile in profiles:
+        cursor.execute("INSERT INTO user_profile (_id) VALUES (%s)", (profile['_id'],))
+
+        if 'previously_recommended' in profile:
+            for item in profile['previously_recommended']:
+                cursor.execute("INSERT INTO prev_recommended (user_profile_id, product_id) VALUES (%s, %s)", (profile['_id'], item))
 
 def close_postgre(cursor, connection):
     """

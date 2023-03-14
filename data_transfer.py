@@ -25,14 +25,14 @@ if __name__ == "__main__":
     # print(f"The product which price deviates the most from the product {random_product['name']} with the price {round(int(random_product['selling_price'])/100, 2)} is {max_deviated_product['name']} with a price of {round(int(max_deviated_product['selling_price'])/100, 2)}")
     
     # Connect to postgreDB
-    # prostgre_cursor, postgre_connection = postgre_functions.open_postgre()
+    prostgre_cursor, postgre_connection = postgre_functions.open_postgre()
 
     # Transfer product data to postgreDB (2c. 1)
     # products = fit_data_functions.fit_product_data(products)
     # postgre_functions.products_to_postgre(prostgre_cursor, products)
 
-    # Transfer profile data to postgreDB
-    
+    # Transfer profile data to postgreDB (profile data already fit for relational database)
+    postgre_functions.profiles_to_postgre(prostgre_cursor, profiles)
 
     # Save data manipulation in postgre and close postgreDB
-    # postgre_functions.close_postgre(prostgre_cursor, postgre_connection)
+    postgre_functions.close_postgre(prostgre_cursor, postgre_connection)
