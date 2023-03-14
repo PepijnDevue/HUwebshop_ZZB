@@ -13,7 +13,9 @@ if __name__ == "__main__":
     # products = mongo_functions.collect_product_data(mongo_db)
 
     # Get profile data
-    profiles = mongo_functions.collect_profile_data(mongo_db)
+    # profiles = mongo_functions.collect_profile_data(mongo_db)
+
+    # Get session data
 
     # Calculate average price (2c.2)
     # price_avg = price_functions.get_avg_price(products)
@@ -32,7 +34,9 @@ if __name__ == "__main__":
     # postgre_functions.products_to_postgre(prostgre_cursor, products)
 
     # Transfer profile data to postgreDB (profile data already fit for relational database)
-    postgre_functions.profiles_to_postgre(prostgre_cursor, profiles)
+    # postgre_functions.profiles_to_postgre(prostgre_cursor, profiles)
+
+    # Transfer session data to postgreDB
 
     # Save data manipulation in postgre and close postgreDB
     postgre_functions.close_postgre(prostgre_cursor, postgre_connection)

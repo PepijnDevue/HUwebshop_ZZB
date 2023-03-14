@@ -122,3 +122,18 @@ def collect_profile_data(db):
 
     # return the list of records
     return item_dicts
+
+def get_sessions(db):
+    """
+    Open a connection to the session collection and retrieve all data from it
+
+    db: the db object used to get the data
+    returns: all data from the sessions collection
+    """
+    # create an object for the collection sessions
+    sessions = db.sessions
+
+    # create a cursor including all records from the collection products
+    cursor = sessions.find()
+
+    return cursor
