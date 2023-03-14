@@ -30,7 +30,7 @@ def get_products(db):
 
 def collect_product_data(db):
     """
-    Get all product data from mongoDB and save only the important and useful data and record
+    Get all product data from mongoDB and save only the important and useful data and records
 
     returns: a list of dicts, each dict resembles one product record
     """
@@ -78,4 +78,47 @@ def collect_product_data(db):
         # only save the info of the record if it has the necessary name and id
         if 'name' in item_dict and '_id' in item_dict and 'selling_price' in item_dict:
             item_dicts.append(item_dict)
+    return item_dicts
+
+def get_profiles(db):
+    """
+    Open a connection to the profiles collection and retrieve all data from it
+
+    db: the db object used to get the data
+    returns: all data from the profiles collection
+    """
+    # create an object for the collection products
+    profiles = db.profiles
+
+    # create a cursor including all records from the collection products
+    cursor = profiles.find()
+
+    return cursor
+
+def collect_profile_data(db):
+    """
+    Get all profile data from mongoDB and save only the important and useful data and records
+
+    returns: a list of dicts, each dict resembles one profile record
+    """
+    cursor = get_profiles(db)
+
+    # a list to fill with the usefull data
+    item_dicts = []
+
+    # loop through the data from mongoDB
+    for record in cursor:
+        # create a dict with only the necessary info per record
+        item_dict = {}
+
+        # save _id
+        item_dict['_id'] = str(record['_id'])
+        # save previously recommended if exists and not empty
+        if 'previously_recommended' in record and len(record['previously_recommended']) > 0:
+            item_dict['previously_recommended'] = record['previously_recommended']
+        
+        # add record to the list
+        item_dicts.append(item_dict)
+
+    # return the list of records
     return item_dicts
