@@ -76,7 +76,7 @@ def collect_product_data(db):
                 if key in record:
                     item_dict[key] = record[key]
         # only save the info of the record if it has the necessary name and id
-        if 'name' in item_dict and '_id' in item_dict and 'selling_price' in item_dict:
+        if record['recommendable'] == True and 'name' in item_dict and '_id' in item_dict and 'selling_price' in item_dict:
             item_dicts.append(item_dict)
     return item_dicts
 
@@ -105,6 +105,8 @@ def collect_profile_data(db):
 
     # a list to fill with the usefull data
     item_dicts = []
+
+
 
     # loop through the data from mongoDB
     for record in cursor:
@@ -137,3 +139,49 @@ def get_sessions(db):
     cursor = sessions.find()
 
     return cursor
+
+def collect_session_data(db):
+    """
+    Get all session data from mongoDB and save only the important and useful data and records
+
+    returns: a list of dicts, each dict resembles one session record
+    """
+    cursor = get_sessions(db)
+
+    # a list to fill with the usefull data
+    item_dicts = []
+
+    # a list of keys wanted for the data transfer
+    keys = ['_id',
+            'preferences.brand',
+            'preferences.category',
+            'preferences.gender',
+            'preferences.sub_category',
+            'preferences.sub_sub_category',
+            'preferences.promos',
+            'preferences.product_type',
+            'preferences.product_size',
+            'order.products']
+
+    # loop through the data from mongoDB
+    for record in cursor:
+        # only save session from humans
+        if record['user_agent']['flags']['is_bot'] == False:
+            # create a dict with only the necessary info per record
+            item_dict = {}
+            # check if the current record includes the wanted info
+            for key in keys:
+                # some info is an additional layer deep
+                if '.' in key:
+                    sub_keys = key.split('.')
+                    key0 = sub_keys[0]
+                    key1 = sub_keys[1]
+                    # use if statement to prevent error if the info is absent
+                    if key0 in record and key1 in record[key0]:
+                        item_dict[key1] = record[key0][key1]
+                else:
+                    if key in record:
+                        item_dict[key] = record[key]
+                        
+            item_dicts.append(item_dict)
+        
