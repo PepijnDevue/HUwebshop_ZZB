@@ -51,12 +51,10 @@ def fit_session_data(sessions):
         if 'product_size' in session:
             session['preferences_product_size'] = list(session.pop('product_size').keys())[0]
         
+        # change list of dicts to list
         if 'products' in session:
             product_lst = []
             for product in session['products']:
                 product_lst.append(product['id'])
             session['products'] = product_lst
-
-        for i in session:
-                print(i, session[i])
 

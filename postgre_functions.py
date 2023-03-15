@@ -74,8 +74,10 @@ def sessions_to_postgre(cursor, sessions):
                 keys.append(key)
                 values.append(value)
 
+        # add to user_session
         cursor.execute(f"INSERT INTO user_session ({keys}) VALUES ({values})")
 
+        # add to session_order
         if 'products' in session:
             for product in session['products']:
                 cursor.execute('INSERT INTO session_order (product_id, session_id) VALUES (%s, %s)', (product, session['_id']))

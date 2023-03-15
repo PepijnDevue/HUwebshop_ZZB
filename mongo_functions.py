@@ -184,6 +184,7 @@ def collect_session_data(db):
                     if key in record:
                         item_dict[key] = record[key]
 
+            # add ordered products
             if 'order' in record and record['order'] != None:
                 item_dict['products'] = record['order']['products']
 
