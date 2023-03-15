@@ -53,6 +53,34 @@ def profiles_to_postgre(cursor, profiles):
         if 'previously_recommended' in profile:
             for item in profile['previously_recommended']:
                 cursor.execute("INSERT INTO prev_recommended (user_profile_id, product_id) VALUES (%s, %s)", (profile['_id'], item))
+        # CREATE BUID LEAVE SESSION_ID EMPTY
+
+def sessions_to_postgre(cursor, sessions):
+    """
+    saves all fitted session information to the postgre database
+
+    cursor: the postgre cursor
+    products: a list of dicts containing the fitted session info
+    """
+    # first create a row in the session, then create rows for every order (see ERD.png)
+    for session in sessions:
+        # create lists for keys and values
+        keys = []
+        values = []
+
+        # Loop over the dictionary and append key-value pairs to the lists
+        for key, value in session.items():
+            if key.startswith('preferences_') or key == '_id':
+                keys.append(key)
+                values.append(value)
+
+        cursor.execute(f"INSERT INTO user_session ({keys}) VALUES ({values})")
+
+        if 'products' in session:
+            for product in session['products']:
+                cursor.execute('INSERT INTO session_order (product_id, session_id) VALUES (%s, %s)', (product, session['_id']))
+
+        # FILL EXISTING BUID ROWS WITH SESSION_ID
 
 def close_postgre(cursor, connection):
     """
