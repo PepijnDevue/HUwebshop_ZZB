@@ -41,7 +41,7 @@ create table user_session(
 
 create table prev_recommended(
     user_profile_id char(24),
-    product_id integer,
+    product_id VARCHAR(255),
     foreign key (user_profile_id) references user_profile(_id),
     foreign key (product_id) references product(_id)
 );
@@ -58,5 +58,5 @@ create table buid(
     user_profile_id char(24),
     user_session_id char(50),
     foreign key (user_profile_id) references user_profile(_id),
-    foreign key (user_session) references user_session(_id)
+    foreign key (user_session_id) references user_session(_id)
 );
