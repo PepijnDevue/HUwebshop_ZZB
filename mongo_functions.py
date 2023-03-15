@@ -160,13 +160,12 @@ def collect_session_data(db):
             'preferences.sub_sub_category',
             'preferences.promos',
             'preferences.product_type',
-            'preferences.product_size',
-            'order.products']
+            'preferences.product_size']
 
     # loop through the data from mongoDB
     for record in cursor:
         # only save session from humans
-        if record['user_agent']['flags']['is_bot'] == False:
+        if 'user_agent' in record and record['user_agent']['flags']['is_bot'] == False:
             # create a dict with only the necessary info per record
             item_dict = {}
             # check if the current record includes the wanted info
@@ -182,6 +181,10 @@ def collect_session_data(db):
                 else:
                     if key in record:
                         item_dict[key] = record[key]
-                        
+
+            if 'order' in record and record['order'] != None:
+                item_dict['products'] = record['order']['products']
+
             item_dicts.append(item_dict)
-        
+            
+    return item_dicts
