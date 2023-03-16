@@ -35,7 +35,7 @@ if __name__ == "__main__":
     # postgre_functions.products_to_postgre(prostgre_cursor, products)
 
     # Transfer profile data to postgreDB (profile data already fit for relational database)
-    postgre_functions.profiles_to_postgre(prostgre_cursor, profiles)
+    postgre_functions.profiles_to_postgre(prostgre_cursor, profiles, postgre_connection)
 
     # Transfer session data to postgreDB
     # sessions = fit_data_functions.fit_session_data(sessions)

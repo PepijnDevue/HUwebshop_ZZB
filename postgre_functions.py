@@ -40,7 +40,7 @@ def products_to_postgre(cursor, products):
         value_string = ', '.join(['%s' for _ in val_list])
         cursor.execute(f"INSERT INTO product ({key_string}) VALUES ({value_string})", val_list)
 
-def profiles_to_postgre(cursor, profiles):
+def profiles_to_postgre(cursor, profiles, connection):
     """
     saves all fitted profile information to the postgre database
 
@@ -61,6 +61,8 @@ def profiles_to_postgre(cursor, profiles):
         if 'buids' in profile:
             for item in profile['buids']:
                 cursor.execute("INSERT INTO buid (_id, user_profile_id) VALUES (%s, %s)", (item, profile['_id']))
+
+        connection.commit()
 
 def sessions_to_postgre(cursor, sessions):
     """
