@@ -75,8 +75,9 @@ def collect_product_data(db):
             else:
                 if key in record:
                     item_dict[key] = record[key]
+        recommendable = 'recommendable' in record and record['recommendable']
         # only save the info of the record if it has the necessary name and id
-        if record['recommendable'] == True and 'name' in item_dict and '_id' in item_dict and 'selling_price' in item_dict:
+        if recommendable and 'name' in item_dict and '_id' in item_dict and 'selling_price' in item_dict:
             item_dicts.append(item_dict)
     return item_dicts
 
