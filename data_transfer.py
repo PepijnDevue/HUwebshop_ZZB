@@ -10,10 +10,10 @@ if __name__ == "__main__":
     mongo_db = mongo_functions.open_mongodb()
 
     # Get product data
-    products = mongo_functions.collect_product_data(mongo_db)
+    # products = mongo_functions.collect_product_data(mongo_db)
 
     # Get profile data
-    # profiles = mongo_functions.collect_profile_data(mongo_db)
+    profiles = mongo_functions.collect_profile_data(mongo_db)
 
     # Get session data
     # sessions = mongo_functions.collect_session_data(mongo_db)
@@ -31,11 +31,11 @@ if __name__ == "__main__":
     prostgre_cursor, postgre_connection = postgre_functions.open_postgre()
 
     # Transfer product data to postgreDB (2c. 1)
-    products = fit_data_functions.fit_product_data(products)
-    postgre_functions.products_to_postgre(prostgre_cursor, products)
+    # products = fit_data_functions.fit_product_data(products)
+    # postgre_functions.products_to_postgre(prostgre_cursor, products)
 
     # Transfer profile data to postgreDB (profile data already fit for relational database)
-    # postgre_functions.profiles_to_postgre(prostgre_cursor, profiles)
+    postgre_functions.profiles_to_postgre(prostgre_cursor, profiles)
 
     # Transfer session data to postgreDB
     # sessions = fit_data_functions.fit_session_data(sessions)

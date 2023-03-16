@@ -50,10 +50,15 @@ def profiles_to_postgre(cursor, profiles):
     # first create a row in the profile, then create rows for every previously recommended (see ERD.png)
     for profile in profiles:
         cursor.execute("INSERT INTO user_profile (_id) VALUES (%s)", (profile['_id'],))
+
+        # CHECK OF PRODUCT IN PG ZIT
         if 'previously_recommended' in profile:
             for item in profile['previously_recommended']:
                 cursor.execute("INSERT INTO prev_recommended (user_profile_id, product_id) VALUES (%s, %s)", (profile['_id'], item))
-        # CREATE BUID LEAVE SESSION_ID EMPTY
+        
+        if 'buids' in profile:
+            for item in profile['buids']:
+                cursor.execute(f"INSERT INTO buid (_id, user_profile_id) VALUES ({item}, {profile['_id']})")
 
 def sessions_to_postgre(cursor, sessions):
     """

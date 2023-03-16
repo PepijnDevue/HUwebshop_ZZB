@@ -120,7 +120,9 @@ def collect_profile_data(db):
         if 'previously_recommended' in record and len(record['previously_recommended']) > 0:
             item_dict['previously_recommended'] = record['previously_recommended']
         
-        # ADD BUIDS (MAYBE FIT LATER?)
+        # add buids if exist and not empty
+        if 'buids' in record and record['buids'] != None:
+            item_dict['buids'] = record['buids']
 
         # add record to the list
         item_dicts.append(item_dict)
