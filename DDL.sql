@@ -54,7 +54,7 @@ create table session_order(
 );
 
 create table buid(
-    _id varchar(255) primary key,
+    _id varchar(255),
     user_profile_id char(24),
     user_session_id char(50),
     foreign key (user_profile_id) references user_profile(_id),
