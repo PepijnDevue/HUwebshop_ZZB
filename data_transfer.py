@@ -41,7 +41,7 @@ def handle_sessions(mongo_db, postgre_cursor, postgre_connection):
     """
     mongo_cursor = mongo_functions.get_sessions(mongo_db)
     done = False
-    batch_size = 300000
+    batch_size = 30000
     counter =0
     while not done:
         counter += 1
@@ -68,10 +68,10 @@ if __name__ == "__main__":
     # handle_products(mongo_db, prostgre_cursor, postgre_connection)
 
     # Transfer profiles
-    handle_profiles(mongo_db, prostgre_cursor, postgre_connection)
+    # handle_profiles(mongo_db, prostgre_cursor, postgre_connection)
 
     # Transfer sessions
-    # handle_sessions(mongo_db, prostgre_cursor, postgre_connection)
+    handle_sessions(mongo_db, prostgre_cursor, postgre_connection)
 
     # Save data manipulation in postgre and close postgreDB
     postgre_functions.close_postgre(prostgre_cursor, postgre_connection)
