@@ -100,10 +100,13 @@ def sessions_to_postgre(cursor, sessions, connection):
         if 'products' in session:
             for product in session['products']:
                 cursor.execute('INSERT INTO session_order (product_id, session_id) VALUES (%s, %s)', (product, session['_id']))
+        buid = session['buid'][0]
+        if type(buid) == list:
+            buid = buid[0]
 
-        cursor.execute("UPDATE buid SET user_session_id = %s WHERE _id = %s", (session['_id'], session['buid'][0]))
+        cursor.execute("UPDATE buid SET user_session_id = %s WHERE _id like %s", (session['_id'], buid))
         count += 1
-        if count%10000 == 0:
+        if count%1000 == 0:
             print(count)
 
 

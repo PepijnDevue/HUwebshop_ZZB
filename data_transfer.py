@@ -41,7 +41,7 @@ def handle_sessions(mongo_db, postgre_cursor, postgre_connection):
     """
     mongo_cursor = mongo_functions.get_sessions(mongo_db)
     done = False
-    batch_size = 30000
+    batch_size = 10000
     counter =0
     while not done:
         counter += 1

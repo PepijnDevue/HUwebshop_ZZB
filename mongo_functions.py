@@ -268,7 +268,7 @@ def batch_handler_sessions(batch_size, cursor):
 
             item_dicts.append(item_dict)
             count+=1
-            if count%10000==0:
+            if count%1000==0:
                 print(count)
             if count > batch_size:
                 return item_dicts, False
