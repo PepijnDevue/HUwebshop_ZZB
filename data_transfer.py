@@ -47,8 +47,9 @@ def handle_sessions(mongo_db, postgre_cursor, postgre_connection):
         counter += 1
         print(f'start batch {counter}')
         item_dicts, done = mongo_functions.batch_handler_sessions(batch_size, mongo_cursor)
-        print('mid batch')
+        print('pre_fit batch')
         item_dicts = fit_data_functions.fit_session_data(item_dicts)
+        print('post_fit batch')
         postgre_functions.sessions_to_postgre(postgre_cursor, item_dicts, postgre_connection)
 
 if __name__ == "__main__":
