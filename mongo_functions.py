@@ -147,18 +147,55 @@ def get_sessions(db):
     return cursor
 
 
-
-
-def collect_data(batch_size, cursor, keys):
+def batch_handler_sessions(batch_size, cursor):
     count=0
+    # a list to fill with the usefull data
+    item_dicts = []
+
+    # a list of keys wanted for the data transfer
+    keys = ['_id',
+            'buid',
+            'preferences.brand',
+            'preferences.category',
+            'preferences.gender',
+            'preferences.sub_category',
+            'preferences.sub_sub_category',
+            'preferences.promos',
+            'preferences.product_type',
+            'preferences.product_size']
+
+    # loop through the data from mongoDB
+    count = 0
     for record in cursor:
-        # voeg toe aan dict
-        count+=1
-        if count > batch_size:
-            return dict, False
+        count += 1
+        # only save session from humans
+        if 'user_agent' in record and record['user_agent']['flags']['is_bot'] == False:
+            # create a dict with only the necessary info per record
+            item_dict = {}
+            # check if the current record includes the wanted info
+            for key in keys:
+                # some info is an additional layer deep
+                if '.' in key:
+                    sub_keys = key.split('.')
+                    key0 = sub_keys[0]
+                    key1 = sub_keys[1]
+                    # use if statement to prevent error if the info is absent
+                    if key0 in record and key1 in record[key0]:
+                        item_dict[key1] = record[key0][key1]
+                else:
+                    if key in record:
+                        item_dict[key] = record[key]
 
-    return dict, True
+            # add ordered products
+            if 'order' in record and record['order'] != None:
+                item_dict['products'] = record['order']['products']
 
+            item_dicts.append(item_dict)
+            count+=1
+            if count > batch_size:
+                return item_dicts, False
+
+    return item_dicts, True
 
 
 def collect_session_data(db):

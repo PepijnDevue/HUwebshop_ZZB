@@ -47,9 +47,9 @@ create table prev_recommended(
 );
 
 create table session_order(
-    user_profile_id char(24),
+    product_id char(24),
     session_id char(50),
-    foreign key (user_profile_id) references user_profile(_id),
+    foreign key (product_id) references product(_id),
     foreign key (session_id) references user_session(_id)
 );
 

@@ -83,19 +83,21 @@ def sessions_to_postgre(cursor, sessions, connection):
                 keys.append(key)
                 values.append(value)
 
+        key_string = ", ".join(keys)
+        # use %s to prevent errors with names like ' L 'Oreal '
+        value_string = ", ".join(["'%s'" % s for s in values])
         # add to user_session
-        cursor.execute(f"INSERT INTO user_session ({keys}) VALUES ({values})")
+        cursor.execute(f"INSERT INTO user_session ({key_string}) VALUES ({value_string})")
 
         # add to session_order
         if 'products' in session:
             for product in session['products']:
                 cursor.execute('INSERT INTO session_order (product_id, session_id) VALUES (%s, %s)', (product, session['_id']))
 
-        # FILL EXISTING BUID ROWS WITH SESSION_ID
-        cursor.execute("UPDATE buid SET session_id = %s WHERE _id = %s", (session['_id'], session['buid']))
+        cursor.execute("UPDATE buid SET user_session_id = %s WHERE _id = %s", (session['_id'], session['buid'][0]))
 
 
-        connection.commit()
+    connection.commit()
 
 def close_postgre(cursor, connection):
     """

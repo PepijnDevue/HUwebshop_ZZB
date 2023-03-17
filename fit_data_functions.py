@@ -35,21 +35,21 @@ def fit_session_data(sessions):
     for session in sessions:
         # change keys to correct name
         if 'brand' in session:
-            session['preferences_brand'] = list(session.pop('brand').keys())[0]
+            session['preference_brand'] = list(session.pop('brand').keys())[0]
         if 'category' in session:
-            session['preferences_category'] = list(session.pop('category').keys())[0]
+            session['preference_category'] = list(session.pop('category').keys())[0]
         if 'gender' in session:
-            session['preferences_gender'] = list(session.pop('gender').keys())[0]
+            session['preference_gender'] = list(session.pop('gender').keys())[0]
         if 'sub_category' in session:
-            session['preferences_sub_category'] = list(session.pop('sub_category').keys())[0]
+            session['preference_sub_category'] = list(session.pop('sub_category').keys())[0]
         if 'sub_sub_category' in session:
-            session['preferences_sub_sub_category'] = list(session.pop('sub_sub_category').keys())[0]
+            session['preference_sub_sub_category'] = list(session.pop('sub_sub_category').keys())[0]
         if 'promos' in session:
-            session['preferences_promos'] = list(session.pop('promos').keys())[0]
+            session['preference_promos'] = list(session.pop('promos').keys())[0]
         if 'product_type' in session:
-            session['preferences_product_type'] = list(session.pop('product_type').keys())[0]
+            session['preference_product_type'] = list(session.pop('product_type').keys())[0]
         if 'product_size' in session:
-            session['preferences_product_size'] = list(session.pop('product_size').keys())[0]
+            session['preference_product_size'] = list(session.pop('product_size').keys())[0]
         
         # change list of dicts to list
         if 'products' in session:
@@ -58,3 +58,4 @@ def fit_session_data(sessions):
                 product_lst.append(product['id'])
             session['products'] = product_lst
 
+    return sessions
