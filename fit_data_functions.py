@@ -15,10 +15,11 @@ def fit_product_data(products):
             product['series'] = product.pop('serie')
         if 'type' in product:
             product['product_type'] = product.pop('type')
+        if 'selling_price' in product:
+            product['price'] = int(product.pop('selling_price'))
 
         # change more key names and value types
         product['product_name'] = product.pop('name')
-        product['price'] = int(product.pop('selling_price'))
         product['target_group'] = product.pop('doelgroep', None)
         product['fast_mover'] = bool(product.get('fast_mover', False))
         product['discount'] = bool(product.get('discount', False))

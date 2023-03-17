@@ -21,7 +21,7 @@ def open_postgre():
     cursor = connection.cursor()
     return cursor, connection
 
-def products_to_postgre(cursor, products):
+def products_to_postgre(cursor, products, connection):
     """
     saves all fitted product information to the postgre database
 
@@ -39,6 +39,8 @@ def products_to_postgre(cursor, products):
         # use %s to prevent errors with names like ' L 'Oreal '
         value_string = ', '.join(['%s' for _ in val_list])
         cursor.execute(f"INSERT INTO product ({key_string}) VALUES ({value_string})", val_list)
+    
+    connection.commit()
 
 def profiles_to_postgre(cursor, profiles, connection):
     """
@@ -62,7 +64,7 @@ def profiles_to_postgre(cursor, profiles, connection):
             for item in profile['buids']:
                 cursor.execute("INSERT INTO buid (_id, user_profile_id) VALUES (%s, %s)", (item, profile['_id']))
 
-        connection.commit()
+    connection.commit()
 
 def sessions_to_postgre(cursor, sessions, connection):
     """

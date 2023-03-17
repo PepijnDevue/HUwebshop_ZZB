@@ -73,10 +73,11 @@ def batch_handler_products(batch_size, cursor):
             else:
                 if key in record:
                     item_dict[key] = record[key]
-        item_dicts.append(item_dict)
-        count += 1
-        if count > batch_size:
-            return item_dicts, False
+        if 'name' in item_dict:
+            item_dicts.append(item_dict)
+            count += 1
+            if count > batch_size:
+                return item_dicts, False
     return item_dicts, True
 
 # def collect_product_data(db):
