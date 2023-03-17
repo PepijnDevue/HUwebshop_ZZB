@@ -29,9 +29,11 @@ def handle_products(mongo_db, postgre_cursor, postgre_connection):
 def handle_profiles(mongo_db, postgre_cursor, postgre_connection):
     mongo_cursor = mongo_functions.get_profiles(mongo_db)
     done = False
-    batch_size = 200000
+    batch_size = 20000
     while not done:
+        # print('batch')
         item_dicts, done = mongo_functions.batch_handler_profiles(batch_size, mongo_cursor)
+        # print('mid_batch')
         postgre_functions.profiles_to_postgre(postgre_cursor, item_dicts, postgre_connection)
 
 def handle_sessions(mongo_db, postgre_cursor, postgre_connection):
@@ -59,10 +61,10 @@ if __name__ == "__main__":
     # handle_2c_3(mongo_db)
 
     # Transfer products
-    handle_products(mongo_db, prostgre_cursor, postgre_connection)
+    # handle_products(mongo_db, prostgre_cursor, postgre_connection)
 
     # Transfer profiles
-    # handle_profiles(mongo_db, prostgre_cursor, postgre_connection)
+    handle_profiles(mongo_db, prostgre_cursor, postgre_connection)
 
     # Transfer sessions
     # handle_sessions(mongo_db, prostgre_cursor, postgre_connection)
@@ -71,19 +73,11 @@ if __name__ == "__main__":
     postgre_functions.close_postgre(prostgre_cursor, postgre_connection)
 
 
-
-    # Get product data
-    # products = mongo_functions.collect_product_data(mongo_db)
-
     # Get profile data
     # profiles = mongo_functions.collect_profile_data(mongo_db)
 
     # Get session data
     # sessions = mongo_functions.collect_session_data(mongo_db)    
-
-    # Transfer product data to postgreDB (2c. 1)
-    # products = fit_data_functions.fit_product_data(products)
-    # postgre_functions.products_to_postgre(prostgre_cursor, products)
 
     # Transfer profile data to postgreDB (profile data already fit for relational database)
     # postgre_functions.profiles_to_postgre(prostgre_cursor, profiles, postgre_connection)

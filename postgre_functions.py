@@ -50,6 +50,7 @@ def profiles_to_postgre(cursor, profiles, connection):
     products: a list of dicts containing the fitted profile info
     """
     # first create a row in the profile, then create rows for every previously recommended (see ERD.png)
+    # count = 0
     for profile in profiles:
         cursor.execute("INSERT INTO user_profile (_id) VALUES (%s)", (profile['_id'],))
 
@@ -63,6 +64,9 @@ def profiles_to_postgre(cursor, profiles, connection):
         if 'buids' in profile:
             for item in profile['buids']:
                 cursor.execute("INSERT INTO buid (_id, user_profile_id) VALUES (%s, %s)", (item, profile['_id']))
+        # count+=1
+        # if count%10000 == 0:
+            # print(count)
 
     connection.commit()
 
@@ -73,6 +77,7 @@ def sessions_to_postgre(cursor, sessions, connection):
     cursor: the postgre cursor
     products: a list of dicts containing the fitted session info
     """
+    count = 0
     # first create a row in the session, then create rows for every order (see ERD.png)
     for session in sessions:
         # create lists for keys and values
@@ -97,6 +102,9 @@ def sessions_to_postgre(cursor, sessions, connection):
                 cursor.execute('INSERT INTO session_order (product_id, session_id) VALUES (%s, %s)', (product, session['_id']))
 
         cursor.execute("UPDATE buid SET user_session_id = %s WHERE _id = %s", (session['_id'], session['buid'][0]))
+        count += 1
+        if count%10000 == 0:
+            print(count)
 
 
     connection.commit()

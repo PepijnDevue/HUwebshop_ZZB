@@ -1,6 +1,5 @@
 import pymongo
 
-# TODO: naam van  de db als funciton parameter
 def open_mongodb():
     """
     Create a connection with the database in mongoDB
@@ -51,7 +50,7 @@ def batch_handler_products(batch_size, cursor):
             'sub_sub_category', 
             'sub_sub_sub_category']
 
-    # a list to fill with the usefull data
+    # a list to fill with the useful data
     item_dicts = []
 
     count = 0
@@ -107,7 +106,7 @@ def batch_handler_products(batch_size, cursor):
 #             'sub_sub_category', 
 #             'sub_sub_sub_category']
 
-#     # a list to fill with the usefull data
+#     # a list to fill with the useful data
 #     item_dicts = []
 
 #     # loop through the data from mongoDB
@@ -148,7 +147,7 @@ def get_profiles(db):
 def batch_handler_profiles(batch_size, cursor):
     """
     """
-     # a list to fill with the usefull data
+     # a list to fill with the useful data
     item_dicts = []
 
     count = 0
@@ -170,6 +169,8 @@ def batch_handler_profiles(batch_size, cursor):
         # add record to the list
         item_dicts.append(item_dict)
         count+=1
+        # if count%10000 == 0:
+            # print(count)
         if count > batch_size:
             return item_dicts, False
 
@@ -183,7 +184,7 @@ def batch_handler_profiles(batch_size, cursor):
 #     """
 #     cursor = get_profiles(db)
 
-#     # a list to fill with the usefull data
+#     # a list to fill with the useful data
 #     item_dicts = []
 
 #     # loop through the data from mongoDB
@@ -224,7 +225,7 @@ def get_sessions(db):
 
 
 def batch_handler_sessions(batch_size, cursor):
-    # a list to fill with the usefull data
+    # a list to fill with the useful data
     item_dicts = []
 
     # a list of keys wanted for the data transfer
@@ -282,7 +283,7 @@ def batch_handler_sessions(batch_size, cursor):
 #     """
 #     cursor = get_sessions(db)
 
-#     # a list to fill with the usefull data
+#     # a list to fill with the useful data
 #     item_dicts = []
 
 #     # a list of keys wanted for the data transfer
