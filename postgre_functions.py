@@ -100,6 +100,8 @@ def sessions_to_postgre(cursor, sessions, connection):
         if 'products' in session:
             for product in session['products']:
                 cursor.execute('INSERT INTO session_order (product_id, session_id) VALUES (%s, %s)', (product, session['_id']))
+
+        # there are some buids that are nested in another list
         buid = session['buid'][0]
         if type(buid) == list:
             buid = buid[0]
