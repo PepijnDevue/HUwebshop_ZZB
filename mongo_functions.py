@@ -1,5 +1,6 @@
 import pymongo
 
+# TODO: naam van  de db als funciton parameter
 def open_mongodb():
     """
     Create a connection with the database in mongoDB
@@ -145,6 +146,21 @@ def get_sessions(db):
 
     return cursor
 
+
+
+
+def collect_data(batch_size, cursor, keys):
+    count=0
+    for record in cursor:
+        # voeg toe aan dict
+        count+=1
+        if count > batch_size:
+            return dict, False
+
+    return dict, True
+
+
+
 def collect_session_data(db):
     """
     Get all session data from mongoDB and save only the important and useful data and records
@@ -158,6 +174,7 @@ def collect_session_data(db):
 
     # a list of keys wanted for the data transfer
     keys = ['_id',
+            'buid',
             'preferences.brand',
             'preferences.category',
             'preferences.gender',
@@ -168,7 +185,9 @@ def collect_session_data(db):
             'preferences.product_size']
 
     # loop through the data from mongoDB
+    count = 0
     for record in cursor:
+        count += 1
         # only save session from humans
         if 'user_agent' in record and record['user_agent']['flags']['is_bot'] == False:
             # create a dict with only the necessary info per record
@@ -192,5 +211,7 @@ def collect_session_data(db):
                 item_dict['products'] = record['order']['products']
 
             item_dicts.append(item_dict)
+        if count%300000==0:
+            print(count)
 
     return item_dicts

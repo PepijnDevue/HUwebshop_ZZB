@@ -64,7 +64,7 @@ def profiles_to_postgre(cursor, profiles, connection):
 
         connection.commit()
 
-def sessions_to_postgre(cursor, sessions):
+def sessions_to_postgre(cursor, sessions, connection):
     """
     saves all fitted session information to the postgre database
 
@@ -92,6 +92,10 @@ def sessions_to_postgre(cursor, sessions):
                 cursor.execute('INSERT INTO session_order (product_id, session_id) VALUES (%s, %s)', (product, session['_id']))
 
         # FILL EXISTING BUID ROWS WITH SESSION_ID
+        cursor.execute("UPDATE buid SET session_id = %s WHERE _id = %s", (session['_id'], session['buid']))
+
+
+        connection.commit()
 
 def close_postgre(cursor, connection):
     """
