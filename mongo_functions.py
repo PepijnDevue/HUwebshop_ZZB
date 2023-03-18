@@ -243,7 +243,6 @@ def batch_handler_sessions(batch_size, cursor):
     # loop through the data from mongoDB
     count = 0
     for record in cursor:
-        count += 1
         # only save session from humans
         if 'user_agent' in record and record['user_agent']['flags']['is_bot'] == False:
             # create a dict with only the necessary info per record
