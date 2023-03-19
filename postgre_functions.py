@@ -81,7 +81,7 @@ def sessions_to_postgre(cursor, sessions, connection):
     count = 0
     session_values = []
     order_values = []
-    buid_values = []
+    # buid_values = []
     # first create a row in the session, then create rows for every order (see ERD.png)
     for session in sessions:
         # create lists for keys and values
@@ -124,10 +124,10 @@ def sessions_to_postgre(cursor, sessions, connection):
                 # cursor.execute('INSERT INTO session_order (product_id, session_id) VALUES (%s, %s)', (product, session['_id']))
 
         # there are some buids that are nested in another list
-        buid = session['buid'][0]
-        if type(buid) == list:
-            buid = buid[0]
-        buid_values.append((session['_id'], buid))
+        # buid = session['buid'][0]
+        # if type(buid) == list:
+            # buid = buid[0]
+        # buid_values.append((session['_id'], buid))
         # cursor.execute("UPDATE buid SET user_session_id = %s WHERE _id like %s", (session['_id'], buid))
         count += 1
         if count%1000 == 0:
@@ -138,7 +138,7 @@ def sessions_to_postgre(cursor, sessions, connection):
     print('execute1')
     execute_batch(cursor, "INSERT INTO session_order (product_id, session_id) VALUES (%s, %s)", order_values)
     print('execute2')
-    execute_batch(cursor, "UPDATE buid SET user_session_id = %s WHERE _id LIKE %s", buid_values)
+    # execute_batch(cursor, "UPDATE buid SET user_session_id = %s WHERE _id LIKE %s", buid_values)
     print('finish execute')
     input('PRESS ENTER TO COMMIT')
     connection.commit()

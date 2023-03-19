@@ -4,6 +4,7 @@ import postgre_functions
 import mongo_functions
 import price_functions
 import fit_data_functions
+import csv
 
 def handle_2c_2(mongo_db):
     products = mongo_functions.collect_product_data(mongo_db)
@@ -52,12 +53,62 @@ def handle_sessions(mongo_db, postgre_cursor, postgre_connection):
         print('post_fit batch')
         postgre_functions.sessions_to_postgre(postgre_cursor, item_dicts, postgre_connection)
 
+def buids_to_csv(cursor):
+    """
+    """
+    with open('buids.csv', 'w', newline='') as file:
+        writer = csv.writer(file)
+        for record in cursor:
+            write_list = []
+            write_list.append(str(record['_id']))
+
+            # add buids if exist and not empty
+            if 'buids' in record and record['buids'] != None:
+                write_list.append(record['buids'])
+                writer.writerow(write_list)
+
+def gather_buids(sessions):
+    item_lists = []
+    print(len(sessions))
+    for record in sessions:
+        print(record)
+        session_id = record[0]
+        # MAYBE JUST PUT IT IN RAM SEE WHATSAPP OR SMT
+        for buid in record[1]:
+            with open('buids.csv') as file:
+                reader = csv.reader(file)
+                for row in reader:
+                    if buid in row[1]:
+                        item_lists.append([buid, row[0], session_id])
+    print(len(item_lists))
+
+def handle_fill_buid(mongo_db, postgre_cursor, postgre_connection):
+    """
+    """
+    profile_cursor = mongo_functions.get_profiles(mongo_db)
+    print('start fill csv')
+    # buids_to_csv(profile_cursor)
+    print('end fill csv')
+    session_cursor = mongo_functions.get_sessions(mongo_db)
+    done = False
+    batch_size = 10000
+    counter = 0
+    while not done:
+        counter += 1
+        print(f'start batch {counter}')
+        # GET SESSION_buid BATCH
+        item_lists, done = mongo_functions.get_session_buids(batch_size, session_cursor)
+        print('pre_gather batch')
+        gather_buids(item_lists)
+        print('post_gather batch')
+        # PUSH BATCH
+
 if __name__ == "__main__":
     # Connect to mongoDB
     mongo_db = mongo_functions.open_mongodb()
 
     # Connect to postgreDB
-    prostgre_cursor, postgre_connection = postgre_functions.open_postgre()
+    postgre_cursor, postgre_connection = postgre_functions.open_postgre()
 
     # Calculate average price
     # handle_2c_2(mongo_db)
@@ -66,16 +117,19 @@ if __name__ == "__main__":
     # handle_2c_3(mongo_db)
 
     # Transfer products
-    # handle_products(mongo_db, prostgre_cursor, postgre_connection)
+    # handle_products(mongo_db, postgre_cursor, postgre_connection)
 
     # Transfer profiles
-    # handle_profiles(mongo_db, prostgre_cursor, postgre_connection)
+    # handle_profiles(mongo_db, postgre_cursor, postgre_connection)
 
     # Transfer sessions
-    handle_sessions(mongo_db, prostgre_cursor, postgre_connection)
+    # handle_sessions(mongo_db, postgre_cursor, postgre_connection)
+
+    # Transfer buids
+    handle_fill_buid(mongo_db, postgre_cursor, postgre_connection)
 
     # Save data manipulation in postgre and close postgreDB
-    postgre_functions.close_postgre(prostgre_cursor, postgre_connection)
+    postgre_functions.close_postgre(postgre_cursor, postgre_connection)
 
 
     # Get profile data

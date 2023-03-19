@@ -22,11 +22,11 @@ create table product(
 );
 
 create table user_profile(
-    _id char(24) primary key
+    _id varchar(255) primary key
 );
 
 create table user_session(
-    _id char(50) primary key,
+    _id VARCHAR(255) primary key,
     preference_brand varchar(255),
     preference_category varchar(255),
     preference_gender varchar(255),
@@ -38,23 +38,23 @@ create table user_session(
 );
 
 create table prev_recommended(
-    user_profile_id char(24),
+    user_profile_id varchar(255),
     product_id VARCHAR(255),
     foreign key (user_profile_id) references user_profile(_id),
     foreign key (product_id) references product(_id)
 );
 
 create table session_order(
-    product_id char(24),
-    session_id char(50),
+    product_id varchar(255),
+    session_id varchar(255),
     foreign key (product_id) references product(_id),
     foreign key (session_id) references user_session(_id)
 );
 
 create table buid(
     _id varchar(255),
-    user_profile_id char(24),
-    user_session_id char(50),
+    user_profile_id varchar(255),
+    user_session_id VARCHAR(255),
     foreign key (user_profile_id) references user_profile(_id),
     foreign key (user_session_id) references user_session(_id)
 );
