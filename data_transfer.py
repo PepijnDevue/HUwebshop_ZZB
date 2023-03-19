@@ -41,7 +41,7 @@ def handle_sessions(mongo_db, postgre_cursor, postgre_connection):
     """
     mongo_cursor = mongo_functions.get_sessions(mongo_db)
     done = False
-    batch_size = 10000
+    batch_size = 50000
     counter =0
     while not done:
         counter += 1
@@ -90,3 +90,4 @@ if __name__ == "__main__":
     # Transfer session data to postgreDB
     # sessions = fit_data_functions.fit_session_data(sessions)
     # postgre_functions.sessions_to_postgre(prostgre_cursor, sessions, postgre_connection)
+    
