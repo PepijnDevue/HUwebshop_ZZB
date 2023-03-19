@@ -26,7 +26,7 @@ create table user_profile(
 );
 
 create table user_session(
-    _id char(50) primary key,
+    _id varchar(255) primary key,
     preference_brand varchar(255),
     preference_category varchar(255),
     preference_gender varchar(255),
@@ -45,8 +45,8 @@ create table prev_recommended(
 );
 
 create table session_order(
-    product_id char(24),
-    session_id char(50),
+    product_id char(30),
+    session_id varchar(255),
     foreign key (product_id) references product(_id),
     foreign key (session_id) references user_session(_id)
 );
