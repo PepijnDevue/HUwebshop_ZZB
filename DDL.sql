@@ -25,8 +25,7 @@ create table user_profile(
 );
 
 create table buid(
-    _id SERIAL primary key,
-    bu_id varchar(255),
+    _id varchar(255) primary key,
     user_profile_id varchar(255),
     foreign key (user_profile_id) references user_profile(_id)
 );
@@ -42,7 +41,7 @@ create table user_session(
     preference_promos varchar(255),
     preference_product_type varchar(255),
     preference_product_size varchar(255),
-    foreign key (buid) references buid(bu_id)
+    foreign key (buid) references buid(_id)
 );
 
 create table prev_recommended(
