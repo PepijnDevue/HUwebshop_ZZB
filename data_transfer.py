@@ -4,7 +4,7 @@ import postgre_functions
 import mongo_functions
 import price_functions
 import fit_data_functions
-import csv
+# import csv
 
 def handle_2c_2(mongo_db):
     products = mongo_functions.collect_product_data(mongo_db)
