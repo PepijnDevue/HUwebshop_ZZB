@@ -9,12 +9,12 @@ def open_postgre():
     returns: a cursor to use the database and the connection object
     """
     # get my secret password securely from a git_ignored file
-    # password_file = open('password.txt')
-    # password = password_file.readline()
+    password_file = open('password.txt')
+    password = password_file.readline()
 
     # write your db name here
     db_name = 'huwebshop'
-    password = 'admin'
+    # password = 'admin'
 
     # create a connection
     connection = psycopg2.connect(f'dbname={db_name} user=postgres password={password}')
