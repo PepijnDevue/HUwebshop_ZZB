@@ -4,7 +4,6 @@ import postgre_functions
 import mongo_functions
 import price_functions
 import fit_data_functions
-# import csv
 
 def handle_2c_2(mongo_db):
     """
