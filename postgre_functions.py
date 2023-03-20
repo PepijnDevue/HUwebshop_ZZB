@@ -73,7 +73,7 @@ def profiles_to_postgre(cursor, profiles, connection):
         None:
 
     """
-    # We need all the product id's to only append order values that are still valid within our database.
+    # We need all the buids to only append order values that are still valid within our database.
     cursor.execute("SELECT _id FROM buid")
     buids = cursor.fetchall()
     # Here we make a list from a big list with tuples
