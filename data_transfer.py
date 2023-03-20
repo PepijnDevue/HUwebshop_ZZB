@@ -75,19 +75,4 @@ if __name__ == "__main__":
     handle_sessions(mongo_db, prostgre_cursor, postgre_connection)
 
     # Save data manipulation in postgre and close postgreDB
-    postgre_functions.close_postgre(prostgre_cursor, postgre_connection)
-
-
-    # Get profile data
-    # profiles = mongo_functions.collect_profile_data(mongo_db)
-
-    # Get session data
-    # sessions = mongo_functions.collect_session_data(mongo_db)    
-
-    # Transfer profile data to postgreDB (profile data already fit for relational database)
-    # postgre_functions.profiles_to_postgre(prostgre_cursor, profiles, postgre_connection)
-
-    # Transfer session data to postgreDB
-    # sessions = fit_data_functions.fit_session_data(sessions)
-    # postgre_functions.sessions_to_postgre(prostgre_cursor, sessions, postgre_connection)
-    
+    postgre_functions.close_postgre(prostgre_cursor, postgre_connection)  
