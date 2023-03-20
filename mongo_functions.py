@@ -34,6 +34,7 @@ def batch_handler_products(batch_size, cursor):
 
     batch_size: the number of product-records to get
     cursor: the mongodb cursor from the product collection
+    returns: the batch of data as list of dicts
     """
     # a list of keys wanted for the data transfer
     keys = ['_id', 
@@ -107,6 +108,7 @@ def batch_handler_profiles(batch_size, cursor):
 
     batch_size: the number of profile-records to get
     cursor: the mongodb cursor from the profile collection
+    returns: the batch of data as list of dicts
     """
     # a list to fill with the useful data
     item_dicts = []
@@ -158,6 +160,7 @@ def batch_handler_sessions(batch_size, cursor):
 
     batch_size: the number of session-records to get
     cursor: the mongodb cursor from the session collection
+    returns: the batch of data as list of dicts
     """
     # a list to fill with the useful data
     item_dicts = []
