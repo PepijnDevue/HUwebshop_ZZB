@@ -1,5 +1,4 @@
 --DDL for the relational database
---EERST DE VARIABELEN AANMAKEN DAN PAS FOREIGN KEY
 
 create table product(
     _id varchar primary key,
