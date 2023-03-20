@@ -30,6 +30,10 @@ def get_products(db):
 
 def batch_handler_products(batch_size, cursor):
     """
+    Get a batch of all useful product information from the product-collection cursor
+
+    batch_size: the number of product-records to get
+    cursor: the mongodb cursor from the product collection
     """
     # a list of keys wanted for the data transfer
     keys = ['_id', 
@@ -53,6 +57,7 @@ def batch_handler_products(batch_size, cursor):
     # a list to fill with the useful data
     item_dicts = []
 
+    # keep track of the amount of records retrieved
     count = 0
 
     # loop through the data from mongoDB
@@ -72,6 +77,8 @@ def batch_handler_products(batch_size, cursor):
             else:
                 if key in record:
                     item_dict[key] = record[key]
+        
+        # only take products that have a name
         if 'name' in item_dict:
             item_dicts.append(item_dict)
             count += 1
@@ -96,11 +103,17 @@ def get_profiles(db):
 
 def batch_handler_profiles(batch_size, cursor):
     """
+    Get a batch of all useful profile information from the profile-collection cursor
+
+    batch_size: the number of profile-records to get
+    cursor: the mongodb cursor from the profile collection
     """
-     # a list to fill with the useful data
+    # a list to fill with the useful data
     item_dicts = []
 
+    # keep track of the amount of records retrieved
     count = 0
+
     # loop through the data from mongoDB
     for record in cursor:
         # create a dict with only the necessary info per record
@@ -119,8 +132,6 @@ def batch_handler_profiles(batch_size, cursor):
         # add record to the list
         item_dicts.append(item_dict)
         count+=1
-        # if count%10000 == 0:
-            # print(count)
         if count > batch_size:
             return item_dicts, False
 
@@ -141,26 +152,13 @@ def get_sessions(db):
 
     return cursor
 
-def get_session_buids(batch_size, cursor):
-    item_lists = []
-
-    count = 0
-    for record in cursor:
-        # only save session from humans
-        if 'user_agent' in record and record['user_agent']['flags']['is_bot'] == False:
-            if '_id' in record and 'buid' in record:
-                item_list = [record['_id'], record['buid']]
-
-                item_lists.append(item_list)
-                count+=1
-                if count%1000==0:
-                    print(count)
-                if count > batch_size:
-                    return item_lists, False
-
-    return item_lists, True
-
 def batch_handler_sessions(batch_size, cursor):
+    """
+    Get a batch of all useful session information from the session-collection cursor
+
+    batch_size: the number of session-records to get
+    cursor: the mongodb cursor from the session collection
+    """
     # a list to fill with the useful data
     item_dicts = []
 
@@ -176,8 +174,10 @@ def batch_handler_sessions(batch_size, cursor):
             'preferences.product_type',
             'preferences.product_size']
 
-    # loop through the data from mongoDB
+    # keep track of the amount of records retrieved
     count = 0
+
+    # loop through the data from mongoDB
     for record in cursor:
         # only save session from humans
         if 'user_agent' in record and record['user_agent']['flags']['is_bot'] == False:
@@ -202,9 +202,6 @@ def batch_handler_sessions(batch_size, cursor):
                 item_dict['products'] = record['order']['products']
 
             item_dicts.append(item_dict)
-            count+=1
-            if count%1000==0:
-                print(count)
             if count > batch_size:
                 return item_dicts, False
 
