@@ -128,7 +128,8 @@ def batch_handler_profiles(batch_size, cursor):
             item_dict['previously_recommended'] = record['previously_recommended']
 
         # save buids
-        item_dict['buids'] = record['buids']
+        if 'buids' in record and len(record['buids']) != 0:
+            item_dict['buids'] = record['buids']
 
         # add record to the list
         item_dicts.append(item_dict)
