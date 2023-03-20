@@ -10,15 +10,15 @@ def open_postgre():
         None
     
     Return:
-        cursor : The curser is used to execute sql querrys to the postgress database
-        connection : The connections is used to create a curser and or commit multiple sql querys stored in the cursor.
+        cursor : The curser is used to execute sql queries to the postgres database
+        connection : The connections is used to create a curser and or commit multiple sql queries stored in the cursor.
     """
     # get my secret password securely from a git_ignored file
     password_file = open('password.txt')
     password = password_file.readline()
 
     # write your db name here.
-    # This is the postgress database Name and password
+    # This is the postgres database Name and password
     db_name = 'huwebshop'
 
     # create a connection
@@ -35,9 +35,9 @@ def products_to_postgre(cursor, products, connection):
     The function products_to_postgre() will transfer all the fitted data collected from mongodb and insert it in to the postgres database.
 
     Parameters:
-        cursor: The psygopg2 cursor is used to execute sql querys.
-        products: This is a list full of dictonarys with all the information about the products that we want to insert into the postgres database.
-        connection: The connection is used to commmit the changes add the end of all the querys being made in the cursor.
+        cursor: The psycopg2 cursor is used to execute sql queries.
+        products: This is a list full of dictionaries with all the information about the products that we want to insert into the postgres database.
+        connection: The connection is used to commit the changes add the end of all the queries being made in the cursor.
     
     Return:
         None
@@ -65,9 +65,9 @@ def profiles_to_postgre(cursor, profiles, connection):
 
 
     Parameters:
-        cursor: The psygopg2 cursor is used to execute sql querys.
-        profiles: This is a list full of dictonarys with all the information about the profiles that we want to insert into the postgres database.
-        connection: The connection is used to commmit the changes add the end of all the querys being made in the cursor.
+        cursor: The psycopg2 cursor is used to execute sql queries.
+        profiles: This is a list full of dictionaries with all the information about the profiles that we want to insert into the postgres database.
+        connection: The connection is used to commit the changes add the end of all the queries being made in the cursor.
 
     Return:
         None:
@@ -85,6 +85,9 @@ def profiles_to_postgre(cursor, profiles, connection):
                 if len(cursor.fetchall()) > 0:
                     cursor.execute("INSERT INTO prev_recommended (user_profile_id, product_id) VALUES (%s, %s)", (profile['_id'], item))
 
+        for buid in profile['buids']:
+            cursor.execute('INSERT INTO buid (_id, user_profile_id) VALUES (%s, %s)', (buid, profile['_id']))
+
     # Commit all the changes to the database. 
     connection.commit()
 
@@ -93,9 +96,9 @@ def sessions_to_postgre(cursor, sessions, connection):
     The function sessions_to_postgre() is here to insert all the session information gathered from mongo into the postgres database.
 
     Parameters:
-        cursor: The psycopg2 cursor is used to execute sql querys.
+        cursor: The psycopg2 cursor is used to execute sql queries.
         sessions: This is a list full of dictionaries with all the information about the sessions that we want to insert into the postgres database.
-        connection: The connection is used to commit the changes add the end of all the querys being made in the cursor.
+        connection: The connection is used to commit the changes add the end of all the queries being made in the cursor.
 
     Return:
         None:
@@ -114,7 +117,8 @@ def sessions_to_postgre(cursor, sessions, connection):
     # first create a row in the session, then create rows for every order (see ERD.png)
     for session in sessions:
         # create lists for keys and values
-        session_keys = ['_id', 
+        session_keys = ['_id',
+                        'buid',
                         'preference_brand', 
                         'preference_category', 
                         'preference_gender', 
@@ -145,7 +149,7 @@ def sessions_to_postgre(cursor, sessions, connection):
                     order_values.append((product, session['_id']))
 
     # Execute the first batch
-    execute_batch(cursor, "INSERT INTO user_session (_id, preference_brand, preference_category, preference_gender, preference_sub_category, preference_sub_sub_category, preference_promos, preference_product_type, preference_product_size) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)", session_values)
+    execute_batch(cursor, "INSERT INTO user_session (_id, buid, preference_brand, preference_category, preference_gender, preference_sub_category, preference_sub_sub_category, preference_promos, preference_product_type, preference_product_size) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", session_values)
     # Execute the second batch
     execute_batch(cursor, "INSERT INTO session_order (product_id, session_id) VALUES (%s, %s)", order_values)
 
@@ -156,8 +160,8 @@ def close_postgre(cursor, connection):
     The function close_postgre() is used to safely close the connection to the database
 
     Parameters:
-        cursor: The psycopg2 cursor is used to execute sql querys.
-        connection: The connection is used to commit the changes add the end of all the querys being made in the cursor.
+        cursor: The psycopg2 cursor is used to execute sql queries.
+        connection: The connection is used to commit the changes add the end of all the queries being made in the cursor.
     
     Return:
         None:
@@ -166,7 +170,7 @@ def close_postgre(cursor, connection):
     connection: the connection object for postgre
     """
 
-    # Connection commits querys that may have been missed.
+    # Connection commits queries that may have been missed.
     connection.commit()
     # we Close the cursor.
     cursor.close()

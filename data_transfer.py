@@ -119,10 +119,10 @@ if __name__ == "__main__":
     handle_products(mongo_db, postgre_cursor, postgre_connection)
 
     # Transfer profiles
-    handle_profiles(mongo_db, postgre_cursor, postgre_connection)
+    # handle_profiles(mongo_db, postgre_cursor, postgre_connection)
 
     # Transfer sessions
-    handle_sessions(mongo_db, postgre_cursor, postgre_connection)
+    # handle_sessions(mongo_db, postgre_cursor, postgre_connection)
 
     # Save data manipulation in postgre and close postgreDB
     postgre_functions.close_postgre(postgre_cursor, postgre_connection)  
