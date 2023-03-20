@@ -66,10 +66,7 @@ def profiles_to_postgre(cursor, profiles, connection):
         if 'buids' in profile:
             for item in profile['buids']:
                 cursor.execute("INSERT INTO buid (_id, user_profile_id) VALUES (%s, %s)", (item, profile['_id']))
-        # count+=1
-        # if count%10000 == 0:
-            # print(count)
-
+                
     connection.commit()
 
 def sessions_to_postgre(cursor, sessions, connection):
@@ -85,6 +82,7 @@ def sessions_to_postgre(cursor, sessions, connection):
     # We need all the product id's to only append order values that are still valid within our database. -Dave
     cursor.execute("SELECT _id FROM product")
     products = cursor.fetchall()
+    # Here we make a list from a big list with tupels
     product_id_values = [product[0] for product in products]
 
     # buid_values = []
@@ -111,39 +109,12 @@ def sessions_to_postgre(cursor, sessions, connection):
 
         session_values.append(tuple(session_row))
 
-
-        # # Loop over the dictionary and append key-value pairs to the lists
-        # for key, value in session.items():
-        #     if key.startswith('preferences_') or key == '_id':
-        #         keys.append(key)
-        #         values.append(value)
-
-        # key_string = ", ".join(keys)
-        # use %s to prevent errors with names like ' L 'Oreal '
-        # value_string = ", ".join(["'%s'" % s for s in values])
-        # add to user_session
-        # cursor.execute(f"INSERT INTO user_session ({key_string}) VALUES ({value_string})")
-
         # add to session_order
         if 'products' in session:
             for product in session['products']:
                 # Here we check if the product actually exists in the database. -Dave
                 if product in product_id_values:
                     order_values.append((product, session['_id']))
-                # cursor.execute('INSERT INTO session_order (product_id, session_id) VALUES (%s, %s)', (product, session['_id']))
-
-        # there are some buids that are nested in another list
-        # buid = session['buid'][0]
-        # if type(buid) == list:
-        #     buid = buid[0]
-        # buid_values.append((session['_id'], buid))
-
-        # cursor.execute("INSERT INTO user_session (_id, preference_brand, preference_category, preference_gender, preference_sub_category, preference_sub_sub_category, preference_promos, preference_product_type, preference_product_size) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)", session_values)
-
-        # cursor.execute("UPDATE buid SET user_session_id = %s WHERE _id like %s", (session['_id'], buid))
-        # count += 1
-        # if count%1000 == 0:
-        #     print(count)
 
     print('execute0')
     # print(session_values)
@@ -156,14 +127,6 @@ def sessions_to_postgre(cursor, sessions, connection):
     input('PRESS ENTER TO COMMIT')
     connection.commit()
     
-    # execute_batch(cursor, "INSERT INTO buid (user_session_id) WHERE _id LIKE  VALUES (%s,%s)", buid_values)
-    # print('execute2')
-    # Update halen we hier eruit en word in een anderen functie gedaan.
-    # execute_batch(cursor, "UPDATE buid SET user_session_id = %s WHERE _id LIKE %s", buid_values)
-    # print('finish execute')
-    # input('PRESS ENTER TO COMMIT')
-    # connection.commit()
-
 def close_postgre(cursor, connection):
     """
     close the connection to the postgre database safely
