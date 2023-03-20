@@ -126,10 +126,6 @@ def batch_handler_profiles(batch_size, cursor):
         # save previously recommended if exists and not empty
         if 'previously_recommended' in record and len(record['previously_recommended']) > 0:
             item_dict['previously_recommended'] = record['previously_recommended']
-        
-        # add buids if exist and not empty
-        if 'buids' in record and record['buids'] != None:
-            item_dict['buids'] = record['buids']
 
         # add record to the list
         item_dicts.append(item_dict)
@@ -167,7 +163,6 @@ def batch_handler_sessions(batch_size, cursor):
 
     # a list of keys wanted for the data transfer
     keys = ['_id',
-            'buid',
             'preferences.brand',
             'preferences.category',
             'preferences.gender',
