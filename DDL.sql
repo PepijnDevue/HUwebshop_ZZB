@@ -26,7 +26,7 @@ create table user_profile(
 );
 
 create table user_session(
-    _id VARCHAR(255) primary key,
+    _id varchar(255) primary key,
     preference_brand varchar(255),
     preference_category varchar(255),
     preference_gender varchar(255),
