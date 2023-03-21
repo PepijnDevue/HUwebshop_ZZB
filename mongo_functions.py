@@ -37,7 +37,7 @@ def batch_handler_products(batch_size, cursor):
     returns: the batch of data as list of dicts
     """
     # a list of keys wanted for the data transfer
-    keys = ['_id', 
+    keys = ['_id',
             'brand', 
             'category', 
             'color', 
@@ -126,9 +126,9 @@ def batch_handler_profiles(batch_size, cursor):
         # save previously recommended if exists and not empty
         if 'previously_recommended' in record and len(record['previously_recommended']) > 0:
             item_dict['previously_recommended'] = record['previously_recommended']
-        
-        # add buids if exist and not empty
-        if 'buids' in record and record['buids'] != None:
+
+        # save buids
+        if 'buids' in record and len(record['buids']) != 0:
             item_dict['buids'] = record['buids']
 
         # add record to the list
@@ -167,7 +167,6 @@ def batch_handler_sessions(batch_size, cursor):
 
     # a list of keys wanted for the data transfer
     keys = ['_id',
-            'buid',
             'preferences.brand',
             'preferences.category',
             'preferences.gender',
@@ -203,6 +202,10 @@ def batch_handler_sessions(batch_size, cursor):
             # add ordered products
             if 'order' in record and record['order'] != None:
                 item_dict['products'] = record['order']['products']
+
+            # add buid
+            if 'buid' in record and len(record['buid']) == 1:
+                item_dict['buid'] = record['buid'][0]
 
             item_dicts.append(item_dict)
             if count > batch_size:
