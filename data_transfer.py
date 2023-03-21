@@ -17,13 +17,16 @@ if __name__ == "__main__":
     # handle_2c_3(mongo_db)
 
     # Transfer products
-    handle_functions.handle_products(mongo_db, postgre_cursor, postgre_connection)
+    handle_functions.handle_products(mongo_db, postgre_cursor)
+    print("Product data is transferred")
 
     # Transfer profiles
     handle_functions.handle_profiles(mongo_db, postgre_cursor)
+    print("Profile data is transferred")
 
     # Transfer sessions
     handle_functions.handle_sessions(mongo_db, postgre_cursor)
+    print("Session data is transferred")
 
     # Save data manipulation in postgre and close postgreDB
     postgre_functions.close_postgre(postgre_cursor, postgre_connection)  
