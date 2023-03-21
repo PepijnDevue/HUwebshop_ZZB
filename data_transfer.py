@@ -145,10 +145,10 @@ if __name__ == "__main__":
     # handle_2c_3(mongo_db)
 
     # Transfer products
-    # handle_products(mongo_db, postgre_cursor, postgre_connection)
+    handle_products(mongo_db, postgre_cursor, postgre_connection)
 
     # Transfer profiles
-    # handle_profiles(mongo_db, postgre_cursor, postgre_connection)
+    handle_profiles(mongo_db, postgre_cursor, postgre_connection)
 
     # Transfer sessions
     handle_sessions(mongo_db, postgre_cursor)
