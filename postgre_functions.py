@@ -112,7 +112,6 @@ def sessions_to_postgre(cursor, sessions):
     Args:
         cursor: psycopg2 cursor object used to execute SQL queries.
         sessions: list of dictionaries containing information about the sessions to be inserted into the database.
-        connection: psycopg2 connection object used to commit changes made to the database.
 
     Returns:
         None

@@ -83,7 +83,6 @@ def handle_sessions(mongo_db, postgre_cursor):
 
     mongo_db: the mongodb object to use for the database
     postgre_cursor: the cursor for the relational database
-    postgre_connection: the connection object for the relational database
     returns: none
     """
     # get the mongodb cursor to retrieve data
