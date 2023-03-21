@@ -126,9 +126,7 @@ def sessions_to_postgre(cursor, sessions, connection):
     # first create a row in the session, then create rows for every order (see ERD.png)
     for session in sessions:
         # create lists for keys and values
-        session_keys = ['_id',
-                        'buid',
-                        'preference_brand', 
+        session_keys = ['preference_brand', 
                         'preference_category', 
                         'preference_gender', 
                         'preference_sub_category', 
@@ -139,7 +137,18 @@ def sessions_to_postgre(cursor, sessions, connection):
         # Create a empty list for the session_rows.
         session_row = []
 
-        # Loop trough the session keys.
+        session_row.append(session['_id'])
+
+        if 'buid' in session:
+            cursor.execute(f"""SELECT _id FROM buid WHERE _id = '{session["buid"]}'""")
+            if len(cursor.fetchall()) > 0:
+                session_row.append(session['buid'])
+            else:
+                session_row.append(None)
+        else:
+            session_row.append(None)
+
+        # Loop trough the rest of the session keys.
         for key in session_keys:
             # If key is present, add it to the session_row
             if key in session:
