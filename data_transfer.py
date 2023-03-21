@@ -77,7 +77,7 @@ def handle_profiles(mongo_db, postgre_cursor, postgre_connection):
         # transfer the data to the relational database
         postgre_functions.profiles_to_postgre(postgre_cursor, item_dicts, postgre_connection)
 
-def handle_sessions(mongo_db, postgre_cursor, postgre_connection):
+def handle_sessions(mongo_db, postgre_cursor):
     """
     Get all useful session info and transfer it to the relational database
 
@@ -100,7 +100,7 @@ def handle_sessions(mongo_db, postgre_cursor, postgre_connection):
         # manipulate the data so it fits in the relational database
         item_dicts = fit_data_functions.fit_session_data(item_dicts)
         # transfer the data to the relational database
-        postgre_functions.sessions_to_postgre(postgre_cursor, item_dicts, postgre_connection)
+        postgre_functions.sessions_to_postgre(postgre_cursor, item_dicts)
 
 if __name__ == "__main__":
     # Connect to mongoDB
@@ -122,7 +122,7 @@ if __name__ == "__main__":
     # handle_profiles(mongo_db, postgre_cursor, postgre_connection)
 
     # Transfer sessions
-    handle_sessions(mongo_db, postgre_cursor, postgre_connection)
+    handle_sessions(mongo_db, postgre_cursor)
 
     # Save data manipulation in postgre and close postgreDB
     postgre_functions.close_postgre(postgre_cursor, postgre_connection)  
