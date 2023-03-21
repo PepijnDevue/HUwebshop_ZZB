@@ -100,7 +100,7 @@ def profiles_to_postgre(cursor, profiles, connection):
     # Commit all the changes to the database. 
     connection.commit()
 
-def sessions_to_postgre(cursor, sessions, connection):
+def sessions_to_postgre(cursor, sessions):
     """
     The function sessions_to_postgre() is here to insert all the session information gathered from mongo into the postgres database.
 
@@ -170,8 +170,6 @@ def sessions_to_postgre(cursor, sessions, connection):
     execute_batch(cursor, "INSERT INTO user_session (_id, buid, preference_brand, preference_category, preference_gender, preference_sub_category, preference_sub_sub_category, preference_promos, preference_product_type, preference_product_size) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", session_values)
     # Execute the second batch
     execute_batch(cursor, "INSERT INTO session_order (product_id, session_id) VALUES (%s, %s)", order_values)
-
-    connection.commit()
     
 def close_postgre(cursor, connection):
     """
