@@ -28,14 +28,13 @@ def open_postgre():
     # Here we return the values
     return cursor, connection
 
-def products_to_postgre(cursor, products, connection):
+def products_to_postgre(cursor, products):
     """
     Transfer all the fitted data collected from MongoDB and insert it into the Postgres database.
 
     Parameters:
         cursor: The cursor to execute SQL queries.
         products: A list full of dictionaries with all the information about the products that we want to insert into the Postgres database.
-        connection: The connection to the database to commit the changes add the end of all the queries being made in the cursor.
 
     Returns:
         None
@@ -80,9 +79,6 @@ def products_to_postgre(cursor, products, connection):
         product_batch_values.append((product_row))
     
     execute_batch(cursor,"INSERT INTO product (_id, brand, category, colour, fast_mover, gender, product_name, price, discount, target_group, size, age, series, product_type, sub_category, sub_sub_category, sub_sub_sub_category) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", product_batch_values)
-
-    # Commit all the changes to the database.
-    connection.commit()
 
 def profiles_to_postgre(cursor, profiles):
     """
