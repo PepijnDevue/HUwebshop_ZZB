@@ -56,14 +56,13 @@ def products_to_postgre(cursor, products, connection):
     # Commit all the changes to the database.
     connection.commit()
 
-def profiles_to_postgre(cursor, profiles, connection):
+def profiles_to_postgre(cursor, profiles):
     """
     Inserts data collected from profiles in MongoDB into the PostgreSQL database.
 
     Parameters:
         cursor (psycopg2.extensions.cursor): Cursor used to execute SQL queries.
         profiles (list[dict]): List of dictionaries with information about profiles to be inserted into the database.
-        connection (psycopg2.extensions.connection): Connection used to commit changes to the database.
 
     Returns:
         None.
@@ -84,7 +83,7 @@ def profiles_to_postgre(cursor, profiles, connection):
     # Here we make a list from a big list with tuples
     buid_values = [bu_id[0] for bu_id in buids]
 
-    # Here we make 2 list's which we will fill up with tupels with the values we need to execute the batch
+    # Here we make 2 list's which we will fill up with tuples with the values we need to execute the batch
     profile_batch_values = []
     prev_recommended_batch_values = []
     buid_batch_values = []

@@ -63,7 +63,7 @@ def handle_products(mongo_db, postgre_cursor, postgre_connection):
         # transfer the data to the relational database
         postgre_functions.products_to_postgre(postgre_cursor, item_dicts, postgre_connection)
 
-def handle_profiles(mongo_db, postgre_cursor, postgre_connection):
+def handle_profiles(mongo_db, postgre_cursor):
     """
     Transfer all useful profile information from the MongoDB object to the
     relational database using the provided cursor and connection objects.
@@ -74,9 +74,6 @@ def handle_profiles(mongo_db, postgre_cursor, postgre_connection):
         postgre_cursor (psycopg2.extensions.cursor): The cursor for the
             PostgreSQL relational database to transfer the profile information
             to.
-        postgre_connection (psycopg2.extensions.connection): The connection
-            object for the PostgreSQL relational database to transfer the
-            profile information to.
 
     Returns:
         None. The function transfers the profile information to the PostgreSQL
@@ -145,10 +142,10 @@ if __name__ == "__main__":
     # handle_2c_3(mongo_db)
 
     # Transfer products
-    # handle_products(mongo_db, postgre_cursor, postgre_connection)
+    handle_products(mongo_db, postgre_cursor, postgre_connection)
 
     # Transfer profiles
-    # handle_profiles(mongo_db, postgre_cursor, postgre_connection)
+    handle_profiles(mongo_db, postgre_cursor)
 
     # Transfer sessions
     handle_sessions(mongo_db, postgre_cursor)
