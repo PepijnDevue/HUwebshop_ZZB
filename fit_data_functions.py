@@ -1,9 +1,11 @@
 def fit_product_data(products):
     """
-    changes product data so it fits in the relational database
+    Changes the product data so that it is suitable for a relational database.
+        Args:
+    products: A list of dictionaries representing product records.
 
-    products: list of dicts, each dict is one product record
-    returns: list of dicts, fitted product data
+    Returns:
+    A list of dictionaries representing the fitted product data.
     """
     for product in products:
         # change key names to unify them (remove dutch or american names eg.) only if keys present
@@ -28,10 +30,13 @@ def fit_product_data(products):
 
 def fit_session_data(sessions):
     """
-    changes session data so it fits in the relational database
+    Changes the session data so that it is suitable for a relational database.
 
-    products: list of dicts, each dict is one session record
-    returns: list of dicts, fitted session data
+        Args:
+    sessions: A list of dictionaries representing session records.
+
+    Returns:
+    A list of dictionaries representing the fitted session data.
     """
     for session in sessions:
         # change keys to correct name
