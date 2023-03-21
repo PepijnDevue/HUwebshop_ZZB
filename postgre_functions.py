@@ -79,9 +79,20 @@ def profiles_to_postgre(cursor, profiles, connection):
     # Here we make a list from a big list with tuples
     buid_values = [product[0] for product in buids]
 
+    # We need all the product id's to only append order values that are still valid within our database.
+    cursor.execute("SELECT _id FROM product")
+    products = cursor.fetchall()
+    # Here we make a list from a big list with tuples
+    product_id_values = [product[0] for product in products]
+
+    # Here we make 2 list's which we will fill up with tupels with the values we need to execute the batch
+    profile_batch_values = []
+    prevrecommended_batch_values = []
+    buid_batch_values = []
+
     # first create a row in the profile, then create rows for every previously recommended (see ERD.png)
     for profile in profiles:
-        cursor.execute("INSERT INTO user_profile (_id) VALUES (%s)", (profile['_id'],))
+        profile_batch_values.append((profile['_id'],))
 
         if 'previously_recommended' in profile:
             for item in profile['previously_recommended']:
@@ -89,16 +100,23 @@ def profiles_to_postgre(cursor, profiles, connection):
                 cursor.execute(f"SELECT * FROM product WHERE _id = '{item}'")
                 # Checks if the cursor fetch is bigger then 0.
                 if len(cursor.fetchall()) > 0:
-                    cursor.execute("INSERT INTO prev_recommended (user_profile_id, product_id) VALUES (%s, %s)", (profile['_id'], item))
+                    # Then append the values to be used in the batch insert
+                    prevrecommended_batch_values.append((profile['_id'], item))
 
         if 'buids' in profile:
             for buid in profile['buids']:
                 if buid not in buid_values:
-                    cursor.execute('INSERT INTO buid (_id, user_profile_id) VALUES (%s, %s)', (buid, profile['_id']))
+                    # Here we append the values we need to use to execute a batch add the end of the function.
+                    buid_batch_values.append((buid, profile['_id']))
+                    # cursor.execute('INSERT INTO buid (_id, user_profile_id) VALUES (%s, %s)', (buid, profile['_id']))
                     buid_values.append(buid)
 
-    # Commit all the changes to the database. 
-    connection.commit()
+    execute_batch(cursor, "INSERT INTO user_profile (_id) VALUES (%s)", profile_batch_values)
+
+    execute_batch(cursor, "INSERT INTO prev_recommended (user_profile_id, product_id) VALUES (%s, %s)", prevrecommended_batch_values)
+
+    execute_batch(cursor, "INSERT INTO buid (_id, user_profile_id) VALUES (%s, %s)", buid_batch_values)
+
 
 def sessions_to_postgre(cursor, sessions, connection):
     """
@@ -180,8 +198,11 @@ def close_postgre(cursor, connection):
     """
 
     # Connection commits queries that may have been missed.
+    print("commit finale querries")
     connection.commit()
     # we Close the cursor.
+    print("Close the cursor")
     cursor.close()
     # Connection gets closed.
+    print("Connections gets closed")
     connection.close()
