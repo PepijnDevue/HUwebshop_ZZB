@@ -73,11 +73,11 @@ def profiles_to_postgre(cursor, profiles, connection):
         None:
 
     """
-    # We need all the buids to only append order values that are still valid within our database.
+    # We need all the buids to only append buid values that are still valid within our database.
     cursor.execute("SELECT _id FROM buid")
     buids = cursor.fetchall()
     # Here we make a list from a big list with tuples
-    buid_values = [product[0] for product in buids]
+    buid_values = [bu_id[0] for bu_id in buids]
 
     # first create a row in the profile, then create rows for every previously recommended (see ERD.png)
     for profile in profiles:
@@ -87,7 +87,7 @@ def profiles_to_postgre(cursor, profiles, connection):
             for item in profile['previously_recommended']:
                 # check if product is recommendable
                 cursor.execute(f"SELECT * FROM product WHERE _id = '{item}'")
-                # Checks if the cursor fetch is bigger then 0.
+                # Checks if the cursor fetch is bigger than 0.
                 if len(cursor.fetchall()) > 0:
                     cursor.execute("INSERT INTO prev_recommended (user_profile_id, product_id) VALUES (%s, %s)", (profile['_id'], item))
 
