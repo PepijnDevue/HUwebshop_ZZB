@@ -4,14 +4,12 @@ from psycopg2.extras import execute_batch
 
 def open_postgre():
     """
-    The function open_postgre() opens up a simple connection to the database from huwebshop.
+    Open a connection to the Postgres database from huwebshop.
 
-    Parameters:
-        None
-    
-    Return:
-        cursor : The curser is used to execute sql queries to the postgres database
-        connection : The connections is used to create a curser and or commit multiple sql queries stored in the cursor.
+    Returns:
+        A tuple containing:
+            - The cursor to execute SQL queries to the Postgres database.
+            - The connection to the database to create a cursor and/or commit multiple SQL queries stored in the cursor.
     """
     # get my secret password securely from a git_ignored file
     password_file = open('password.txt')
@@ -32,16 +30,15 @@ def open_postgre():
 
 def products_to_postgre(cursor, products, connection):
     """
-    The function products_to_postgre() will transfer all the fitted data collected from mongodb and insert it in to the postgres database.
+    Transfer all the fitted data collected from MongoDB and insert it into the Postgres database.
 
     Parameters:
-        cursor: The psycopg2 cursor is used to execute sql queries.
-        products: This is a list full of dictionaries with all the information about the products that we want to insert into the postgres database.
-        connection: The connection is used to commit the changes add the end of all the queries being made in the cursor.
-    
-    Return:
-        None
+        cursor: The cursor to execute SQL queries.
+        products: A list full of dictionaries with all the information about the products that we want to insert into the Postgres database.
+        connection: The connection to the database to commit the changes add the end of all the queries being made in the cursor.
 
+    Returns:
+        None
     """
     # Loops trough all the products.
     for product in products:
@@ -61,17 +58,25 @@ def products_to_postgre(cursor, products, connection):
 
 def profiles_to_postgre(cursor, profiles, connection):
     """
-    The function profiles_to_postgre() inserts all the data collected from profiles in mongo an transfers it in to the postgres database.
-
+    Inserts data collected from profiles in MongoDB into the PostgreSQL database.
 
     Parameters:
-        cursor: The psycopg2 cursor is used to execute sql queries.
-        profiles: This is a list full of dictionaries with all the information about the profiles that we want to insert into the postgres database.
-        connection: The connection is used to commit the changes add the end of all the queries being made in the cursor.
+        cursor (psycopg2.extensions.cursor): Cursor used to execute SQL queries.
+        profiles (list[dict]): List of dictionaries with information about profiles to be inserted into the database.
+        connection (psycopg2.extensions.connection): Connection used to commit changes to the database.
 
-    Return:
-        None:
+    Returns:
+        None.
 
+    The function inserts data into the following tables:
+    - user_profile
+    - prev_recommended
+    - buid
+
+    For each profile in the list, it creates a row in the user_profile table with the _id field value. If the profile has
+    a 'previously_recommended' field, the function creates a row for every product in the list with the profile _id and
+    product _id in the prev_recommended table. If the profile has a 'buids' field, the function creates a row for every
+    buid in the list in the buid table, with the _id and user_profile_id fields.
     """
     # We need all the buids to only append buid values that are still valid within our database.
     cursor.execute("SELECT _id FROM buid")
@@ -102,15 +107,18 @@ def profiles_to_postgre(cursor, profiles, connection):
 
 def sessions_to_postgre(cursor, sessions, connection):
     """
-    The function sessions_to_postgre() is here to insert all the session information gathered from mongo into the postgres database.
+    Insert all session information gathered from MongoDB into the PostgreSQL database.
 
-    Parameters:
-        cursor: The psycopg2 cursor is used to execute sql queries.
-        sessions: This is a list full of dictionaries with all the information about the sessions that we want to insert into the postgres database.
-        connection: The connection is used to commit the changes add the end of all the queries being made in the cursor.
+    Args:
+        cursor: psycopg2 cursor object used to execute SQL queries.
+        sessions: list of dictionaries containing information about the sessions to be inserted into the database.
+        connection: psycopg2 connection object used to commit changes made to the database.
 
-    Return:
-        None:
+    Returns:
+        None
+
+    Raises:
+        None
     """
     # Create a empty list for the session_values
     session_values = []
@@ -166,17 +174,17 @@ def sessions_to_postgre(cursor, sessions, connection):
     
 def close_postgre(cursor, connection):
     """
-    The function close_postgre() is used to safely close the connection to the database
+    Safely close the connection to the PostgreSQL database.
 
-    Parameters:
-        cursor: The psycopg2 cursor is used to execute sql queries.
-        connection: The connection is used to commit the changes add the end of all the queries being made in the cursor.
-    
-    Return:
-        None:
+    Args:
+        cursor: psycopg2 cursor object used to execute SQL queries.
+        connection: psycopg2 connection object used to commit changes made to the database.
 
-    cursor: the cursor object for postgre
-    connection: the connection object for postgre
+    Returns:
+        None
+
+    Raises:
+        None
     """
 
     # Connection commits queries that may have been missed.

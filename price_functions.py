@@ -1,9 +1,12 @@
 def get_avg_price(products):
     """
-    calculates the average price from a list of products
+    Calculates the average price from a list of products.
 
-    products: a list of dicts, every dict is one product record
-    returns: the average price from the list in euros
+        Args:
+    products: A list of dictionaries representing product records.
+
+    Returns:
+    The average price from the list in euros, rounded to two decimal places.
     """
     total = 0
     n = 0
@@ -17,11 +20,14 @@ def get_avg_price(products):
 
 def find_max_price_deviation_product(given_product, products):
     """
-    finds the product which price deviates the most from the price of a given product
+    Finds the product whose price deviates the most from the price of a given product.
     
-    product: the given product, dict
-    products: the given list of products, list of dicts
-    returns: the product that deviates most from the given product according to price, dict
+        Args:
+    given_product: A dictionary representing the given product.
+    products: A list of dictionaries representing products to compare with the given product.
+    
+    Returns:
+    The product that deviates the most from the given product according to price, as a dictionary.
     """
     compare_price = given_product['selling_price']
     max_deviated_price = 0

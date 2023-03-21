@@ -2,9 +2,13 @@ import pymongo
 
 def open_mongodb():
     """
-    Create a connection with the database in mongoDB
-    
-    returns: the db object
+    Creates a connection to the MongoDB database.
+
+    Returns:
+        The `Database` object representing the connected database.
+
+    Raises:
+        `pymongo.errors.ConnectionFailure` if the connection attempt fails.
     """
     # create a connection with the client
     client = pymongo.MongoClient('mongodb://localhost:27017')
@@ -15,10 +19,16 @@ def open_mongodb():
 
 def get_products(db):
     """
-    Open a connection to the product collection and retrieve all data from it
+    Retrieves all data from the 'products' collection in the given database.
 
-    db: the db object used to get the data
-    returns: all data from the products collection
+    Args:
+        db: The `Database` object representing the database to retrieve data from.
+
+    Returns:
+        A `Cursor` object representing the retrieved data.
+
+    Raises:
+        `pymongo.errors.InvalidOperation` if an invalid operation is performed on the cursor.
     """
     # create an object for the collection products
     products = db.products
@@ -30,11 +40,20 @@ def get_products(db):
 
 def batch_handler_products(batch_size, cursor):
     """
-    Get a batch of all useful product information from the product-collection cursor
+    Retrieves a batch of useful product information from the provided `cursor` object.
 
-    batch_size: the number of product-records to get
-    cursor: the mongodb cursor from the product collection
-    returns: the batch of data as list of dicts
+    Args:
+        batch_size: The number of product records to retrieve.
+        cursor: The MongoDB `Cursor` object representing the 'products' collection.
+
+    Returns:
+        A tuple containing two items:
+            1. A list of dictionaries containing the retrieved product information.
+            2. A boolean value indicating if the end of the cursor has been reached.
+
+    Notes:
+        - The list of keys used to retrieve data from the records is hardcoded in the function.
+        - Only products with a name are included in the returned list.
     """
     # a list of keys wanted for the data transfer
     keys = ['_id',
@@ -89,11 +108,17 @@ def batch_handler_products(batch_size, cursor):
 
 def get_profiles(db):
     """
-    Open a connection to the profiles collection and retrieve all data from it
+     Opens a connection to the 'profiles' collection and retrieves all data from it.
 
-    db: the db object used to get the data
-    returns: all data from the profiles collection
-    """
+     Args:
+         db: The `Database` object representing the MongoDB database.
+
+     Returns:
+         A MongoDB `Cursor` object representing the 'profiles' collection.
+
+     Raises:
+         `pymongo.errors.OperationFailure`: If the user does not have permission to read the 'profiles' collection.
+     """
     # create an object for the collection products
     profiles = db.profiles
 
@@ -104,11 +129,22 @@ def get_profiles(db):
 
 def batch_handler_profiles(batch_size, cursor):
     """
-    Get a batch of all useful profile information from the profile-collection cursor
+    Gets a batch of all useful profile information from the 'profiles' collection cursor.
 
-    batch_size: the number of profile-records to get
-    cursor: the mongodb cursor from the profile collection
-    returns: the batch of data as list of dicts
+    Args:
+        batch_size: The number of profile records to get.
+        cursor: The MongoDB `Cursor` object from the 'profiles' collection.
+
+    Returns:
+        A tuple containing:
+            - A list of dictionaries representing the batch of data, each dictionary containing the following keys:
+                - '_id': The profile's MongoDB ID as a string.
+                - 'previously_recommended' (optional): A list of strings representing previously recommended products.
+                - 'buids' (optional): A list of strings representing BUIDs (Browser Unique Identifiers).
+            - A boolean indicating whether there are more records to retrieve.
+
+    Raises:
+        `ValueError`: If `batch_size` is less than or equal to 0.
     """
     # a list to fill with the useful data
     item_dicts = []
@@ -141,10 +177,13 @@ def batch_handler_profiles(batch_size, cursor):
 
 def get_sessions(db):
     """
-    Open a connection to the session collection and retrieve all data from it
+    Open a connection to the sessions collection and retrieve all data.
 
-    db: the db object used to get the data
-    returns: all data from the sessions collection
+    Args:
+        db: The db object used to get the data.
+
+    Returns:
+        A cursor including all records from the sessions collection.
     """
     # create an object for the collection sessions
     sessions = db.sessions
@@ -156,11 +195,27 @@ def get_sessions(db):
 
 def batch_handler_sessions(batch_size, cursor):
     """
-    Get a batch of all useful session information from the session-collection cursor
+    Retrieve a batch of session information from the MongoDB session collection cursor.
 
-    batch_size: the number of session-records to get
-    cursor: the mongodb cursor from the session collection
-    returns: the batch of data as list of dicts
+    Args:
+        batch_size (int): The number of session records to retrieve.
+        cursor: The MongoDB cursor from the session collection.
+
+    Returns:
+        A tuple containing:
+            - A batch of session data as a list of dictionaries, each containing the following keys:
+                - '_id' (str): The session ID.
+                - 'preferences.brand' (str): The brand preference of the user.
+                - 'preferences.category' (str): The category preference of the user.
+                - 'preferences.gender' (str): The gender preference of the user.
+                - 'preferences.sub_category' (str): The sub-category preference of the user.
+                - 'preferences.sub_sub_category' (str): The sub-sub-category preference of the user.
+                - 'preferences.promos' (bool): Whether the user has opted-in to receive promotional messages.
+                - 'preferences.product_type' (str): The product type preference of the user.
+                - 'preferences.product_size' (str): The product size preference of the user.
+                - 'products' (List[Dict[str, Any]]): A list of dictionaries representing the ordered products.
+                - 'buid' (str): The browser unique identifier (BUID).
+            - A boolean indicating whether there are more batches to retrieve (True) or not (False).
     """
     # a list to fill with the useful data
     item_dicts = []
