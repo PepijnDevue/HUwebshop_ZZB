@@ -205,7 +205,10 @@ def batch_handler_sessions(batch_size, cursor):
 
             # add buid
             if 'buid' in record and len(record['buid']) == 1:
-                item_dict['buid'] = record['buid'][0]
+                if type(record['buid'][0] == list):
+                    item_dict['buid'] = record['buid'][0][0]
+                else:
+                    item_dict['buid'] = record['buid'][0]
 
             item_dicts.append(item_dict)
             if count > batch_size:
