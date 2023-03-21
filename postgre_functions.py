@@ -1,6 +1,7 @@
 # imports
 import psycopg2
 from psycopg2.extras import execute_batch
+import json
 
 def open_postgre():
     """
@@ -40,6 +41,9 @@ def products_to_postgre(cursor, products, connection):
     Returns:
         None
     """
+    # Here we create a empty list that we wil use in the execute batch later in the function
+    product_batch_values = []
+
     # Loops trough all the products.
     for product in products:
         # get the list of rows
@@ -47,12 +51,30 @@ def products_to_postgre(cursor, products, connection):
 
         # get the list of values
         val_list = [product[key] for key in row_list]
+        dict_to_string = json.dumps(val_list[2], ensure_ascii=False)
+        # if val_list[2]
+        val_list[2] = f'{dict_to_string}'
+        # print(val_list)
+        print(val_list)
 
-        key_string = ", ".join(row_list)
+        # testString = json.dump(val_list[3])
+        # print(testString)
+        product_batch_values.append((val_list))
+
+
+        # key_string = ", ".join(row_list)
+        # print(f"wat de fuck is key string \n {key_string} \n")
+        # print(f"value string values \n {value_string} \n")
         # use %s to prevent errors with names like ' L 'Oreal '
-        value_string = ', '.join(['%s' for _ in val_list])
-        cursor.execute(f"INSERT INTO product ({key_string}) VALUES ({value_string})", val_list)
+        # value_string = ', '.join(['%s' for _ in val_list])
+
+        # print(f"wat de fuck is key string \n {key_string} \n")
+        # print(f"value string values \n {value_string} \n")
+        # print(f"vallist values ==== \n\n {val_list} \n\n\n\n")
+        # cursor.execute(f"INSERT INTO product ({key_string}) VALUES ({value_string})")
     
+    execute_batch(cursor,"INSERT INTO product (_id, brand, category, fast_mover, gender, size, colour, price, product_name, target_group, discount) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", product_batch_values)
+
     # Commit all the changes to the database.
     connection.commit()
 
