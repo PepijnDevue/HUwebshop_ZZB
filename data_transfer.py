@@ -88,7 +88,7 @@ def handle_profiles(mongo_db, postgre_cursor, postgre_connection):
     done = False
 
     # transfer the profiles in batches to increase performance
-    batch_size = 20000
+    batch_size = 100000
 
     while not done:
         # get a batch of information from mongodb
