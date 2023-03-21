@@ -7,10 +7,13 @@ import fit_data_functions
 
 def handle_2c_2(mongo_db):
     """
-    Calculate the average price of all products
+    Calculates the average price of all products in the MongoDB database.
 
-    mongo_db: the mongodb object to use for the database
-    returns: None
+    Args:
+        mongo_db: The MongoDB object to use for the database.
+
+    Returns:
+        None
     """
     products = mongo_functions.collect_product_data(mongo_db)
     price_avg = price_functions.get_avg_price(products)
@@ -18,10 +21,13 @@ def handle_2c_2(mongo_db):
 
 def handle_2c_3(mongo_db):
     """
-    Choose a random product, get it price and find the product which price deviates the most from it
+    Choose a random product, retrieve its price, and find the product that deviates the most from it.
 
-    mongo_db:the mongodb object to use for the database
-    returns: None
+    Args:
+        mongo_db: The MongoDB object to use for the database.
+
+    Returns:
+        None
     """
     products = mongo_functions.collect_product_data(mongo_db)
     random_product = random.choice(products)
@@ -31,12 +37,15 @@ def handle_2c_3(mongo_db):
 
 def handle_products(mongo_db, postgre_cursor, postgre_connection):
     """
-    Get all useful product info and transfer it to the relational database
+    Retrieves useful product information from MongoDB and transfers it to a relational database.
 
-    mongo_db: the mongodb object to use for the database
-    postgre_cursor: the cursor for the relational database
-    postgre_connection: the connection object for the relational database
-    returns: none
+    Args:
+        mongo_db: A MongoDB object used to connect to the MongoDB database.
+        postgre_cursor: A cursor object used to execute PostgreSQL commands.
+        postgre_connection: A connection object to a PostgreSQL database.
+
+    Returns:
+        None
     """
     # get the mongodb cursor to retrieve data
     mongo_cursor = mongo_functions.get_products(mongo_db)
@@ -56,12 +65,22 @@ def handle_products(mongo_db, postgre_cursor, postgre_connection):
 
 def handle_profiles(mongo_db, postgre_cursor, postgre_connection):
     """
-    Get all useful profile info and transfer it to the relational database
+    Transfer all useful profile information from the MongoDB object to the
+    relational database using the provided cursor and connection objects.
 
-    mongo_db: the mongodb object to use for the database
-    postgre_cursor: the cursor for the relational database
-    postgre_connection: the connection object for the relational database
-    returns: none
+    Args:
+        mongo_db (pymongo.database.Database): The MongoDB database object to
+            retrieve the profile information from.
+        postgre_cursor (psycopg2.extensions.cursor): The cursor for the
+            PostgreSQL relational database to transfer the profile information
+            to.
+        postgre_connection (psycopg2.extensions.connection): The connection
+            object for the PostgreSQL relational database to transfer the
+            profile information to.
+
+    Returns:
+        None. The function transfers the profile information to the PostgreSQL
+        database but does not return anything.
     """
     # get the mongodb cursor to retrieve data
     mongo_cursor = mongo_functions.get_profiles(mongo_db)
@@ -79,11 +98,22 @@ def handle_profiles(mongo_db, postgre_cursor, postgre_connection):
 
 def handle_sessions(mongo_db, postgre_cursor):
     """
-    Get all useful session info and transfer it to the relational database
+    Transfer all useful session information from the MongoDB object to the
+    relational database using the provided cursor and connection objects.
 
-    mongo_db: the mongodb object to use for the database
-    postgre_cursor: the cursor for the relational database
-    returns: none
+    Args:
+        mongo_db (pymongo.database.Database): The MongoDB database object to
+            retrieve the session information from.
+        postgre_cursor (psycopg2.extensions.cursor): The cursor for the
+            PostgreSQL relational database to transfer the session information
+            to.
+        postgre_connection (psycopg2.extensions.connection): The connection
+            object for the PostgreSQL relational database to transfer the
+            session information to.
+
+    Returns:
+        None. The function transfers the session information to the PostgreSQL
+        database but does not return anything.
     """
     # get the mongodb cursor to retrieve data
     mongo_cursor = mongo_functions.get_sessions(mongo_db)
