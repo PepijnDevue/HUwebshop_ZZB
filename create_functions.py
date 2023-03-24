@@ -32,7 +32,10 @@ def create_table_most_recommended(cursor):
     execute_batch(cursor, 'insert into most_recommended (product_id, frequency) values (%s, %s)', most_recommended_vals)
 
 def create_row_top_category(cursor):
-    return
+    # add row to user_profile
+    cursor.execute('alter table user_profile add top_category varchar(255)')
+
+    
 
 def create_table_top_category_product(cursor):
     return
