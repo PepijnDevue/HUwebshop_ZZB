@@ -35,6 +35,9 @@ def create_row_top_category(cursor):
     # add row to user_profile
     cursor.execute('alter table user_profile add top_category varchar(255)')
 
+    # fetch buid and preference_category from all user_sessions
+    
+
     
 
 def create_table_top_category_product(cursor):
