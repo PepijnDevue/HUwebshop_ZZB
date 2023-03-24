@@ -36,7 +36,21 @@ def create_row_top_category(cursor):
     cursor.execute('alter table user_profile add top_category varchar(255)')
 
     # fetch buid and preference_category from all user_sessions
-    
+    cursor.execute('select buid, preference_category from user_session where buid is not null')
+    sessions = cursor.fetchall()
+
+    # TODO: TEST THIS IN PGADMIN
+    freq_dict = {}
+    for session in sessions:
+        cursor.execute('select user_profile_id form buid where buid._id = %s', (session[0]))
+        user_profile_id = cursor.fetchall()
+        if user_profile_id not in freq_dict:
+            freq_dict[user_profile_id] = {}
+        if session[1] in freq_dict[user_profile_id]:
+            freq_dict[user_profile_id][session[1]] += 1
+        else:
+            freq_dict[user_profile_id][session[1]] = 1
+
 
     
 
