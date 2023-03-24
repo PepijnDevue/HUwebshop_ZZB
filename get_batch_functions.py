@@ -180,7 +180,7 @@ def get_session_batch(batch_size, cursor):
                 item_dict['products'] = record['order']['products']
 
             # add buid
-            if 'buid' in record and len(record['buid']) == 1:
+            if 'buid' in record:
                 if type(record['buid'][0] == list):
                     item_dict['buid'] = record['buid'][0][0]
                 else:
