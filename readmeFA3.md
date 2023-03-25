@@ -6,6 +6,7 @@ This code use a rule-based system to create some information in the relational d
 
 - [Usage](#usage)
 - [Explanation](#explanation)
+- [AR](#ar)
 - [Contact](#contact)
 
 ## Usage
@@ -19,6 +20,23 @@ The content filter looks at the target_group of a specific product and recommend
 
 ### collaborative filter
 The collaborative filter looks at all sessions the profile has done before and what the preference_category was from each of those sessions to find one category that the user likes the most. From this category 4 products are taken that have been recommended most. And here again, if there are less than 4 products in this table from this category, other products that are most previously recommended are added to the output list.
+
+## AR
+
+This paragraph will contain the theoretical notation learned in AR for the data-collection for the new tables and rows created *highlighted green in the [Entity Relation Diagram](./ERD.png)*
+
+### Most_recommended
+```
+P = verzameling van alle producten
+R = verzameling van alle keren dat een product is aangeraden
+n = #(R)
+
+F(p) = ∑_{i=1}^{n} (p∈R_i) = voor product p, tel alle keren dat het is aangeraden
+
+∀x ∈ P : F(x)
+```
+
+
 
 ## Contact
 
