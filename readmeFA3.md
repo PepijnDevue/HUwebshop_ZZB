@@ -26,16 +26,40 @@ The collaborative filter looks at all sessions the profile has done before and w
 This paragraph will contain the theoretical notation learned in AR for the data-collection for the new tables and rows created *highlighted green in the [Entity Relation Diagram](./ERD.png)*
 
 ### Most_recommended
+
 ```
 P = verzameling van alle producten
 R = verzameling van alle keren dat een product is aangeraden
 n = #(R)
 
-F(p) = ∑_{i=1}^{n} (p∈R_i) = voor product p, tel alle keren dat het is aangeraden
+F(p) = ∑_{i=1}^{n} (p∈R_i)
+Voor product p, tel alle keren dat het is aangeraden
 
 ∀x ∈ P : F(x)
+Voor alle producten in P, tel het aantal keer dat dat product is aangeraden
 ```
 
+### Top_category
+
+```
+Prof = verzameling van alle profielen
+S = verzameling van alle sessions
+Prod = verzameling van alle producten
+C = {category|category ∈ Prod}
+n = #(S)
+
+FreqCat(p, c) = ∑_{i=1}^{n} (S_i.buid = p.buid ∧ S_i.preference_category = c)
+tel alle sessions bij elkaar op waar de buid matcht met die van de ingevoerde profile en de preference_category matcht met de ingevoerd categorie
+
+PrefCats(p) = { FreqCat(p, c) | c ∈ C}
+Maak een frequentietabel voor één profiel met daarin alle categorieen en hoevaak die prefered zijn in sessies van dat profiel
+
+PrefCat(p) = (c ∈ PrefCats(p) | ∀x ∈ PrefCats(p) : c.frequentie ≥ x.frequentie)
+Selecteer de categorie uit de verzameling die PrefCats teruggeeft die de hoogste frequentie heeft
+
+∀p ∈ Prof : PrefCat(p)
+Voor alle profielen, pak de categorie die het meest is gepreferreerd in de bijbehorende sessies
+```
 
 
 ## Contact
