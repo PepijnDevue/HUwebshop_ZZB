@@ -97,7 +97,7 @@ def create_table_top_category_product(cursor):
     Fill it with every unique category and the 5 most recommended products from that category
 
     Args:
-        cursor (_type_): _description_
+        cursor (postgres-cursor): The psycopg2 cursor to access the database
     """
     # create the table top_category product if it does not exist yet
     cursor.execute('create table if not exists top_category_product (category varchar(255) primary key, product_1 varchar(255), product_2 varchar(255), product_3 varchar(255), product_4 varchar(255), product_5 varchar(255))')
@@ -124,6 +124,13 @@ def create_table_top_category_product(cursor):
     execute_batch(cursor, 'insert into top_category_product (category, product_1, product_2, product_3, product_4, product_5) values (%s, %s, %s, %s, %s, %s)', top_cat_vals)
 
 def create_table_top_group_product(cursor):
+    """
+    Add the table top_group_product if it does not exist yet
+    Fill it with every unique category and the 5 most recommended products from that group
+
+    Args:
+        cursor (postgres-cursor): The psycopg2 cursor to access the database
+    """
     # create the table top_group_product if it does not exist yet
     cursor.execute('create table if not exists top_group_product (target_group varchar(255) primary key, product_1 varchar(255), product_2 varchar(255), product_3 varchar(255), product_4 varchar(255), product_5 varchar(255))')
 
