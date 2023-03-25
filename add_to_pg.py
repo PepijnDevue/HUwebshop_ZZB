@@ -8,7 +8,7 @@ if __name__ == '__main__':
     cursor, connection = postgre_functions.open_postgre()
 
     # create and fill table most_recommended
-    # create_functions.create_table_most_recommended(cursor)
+    create_functions.create_table_most_recommended(cursor)
 
     # create and fill row top_category in table user_profile
     create_functions.create_row_top_category(cursor)
