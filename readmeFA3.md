@@ -45,7 +45,7 @@ Voor alle producten in P, tel het aantal keer dat dat product is aangeraden
 Prof = verzameling van alle profielen
 S = verzameling van alle sessions
 Prod = verzameling van alle producten
-C = {category|category ∈ Prod}
+C = {category|category ∈ Prod} = verzameling van alle categorieen
 n = #(S)
 
 FreqCat(p, c) = ∑_{i=1}^{n} (S_i.buid = p.buid ∧ S_i.preference_category = c)
@@ -61,7 +61,31 @@ Selecteer de categorie uit de verzameling die PrefCats teruggeeft die de hoogste
 Voor alle profielen, pak de categorie die het meest is gepreferreerd in de bijbehorende sessies
 ```
 
+### Top_category_product
+```
+M = verzameling van most_recommended producten
+P = verzameling van alle producten
+C = {category|category ∈ P} = verzameling van alle categorieen
 
+M5(c) = #{m ∈ (M ∩ P)|∀x ∈ S :(x.frequency ≤ m.frequency ∧ m_category = c)} = 5
+Pak de 5 producten uit most_recommended die de hoogste frequentie hebben én in categorie c horen
+
+∀c ∈ C : M5(c)
+Voor alle categorieen, pak de 5 producten die het meest aangeraden zijn van die categorie
+```
+
+### Top_group_product
+```
+M = verzameling van most_recommended producten
+P = verzameling van alle producten
+G = {groep|groep ∈ P} = verzameling van alle doelgroepen
+
+M5(g) = #{m ∈ (M ∩ P)|∀x ∈ S :(x.frequency ≤ m.frequency ∧ m.target_group = g)} = 5
+Pak de 5 producten uit most_recommended die de hoogste frequentie hebben én in doelgroep g horen
+
+∀g ∈ G : M5(g)
+Voor alle doelgroepen, pak de 5 producten die het meest aangeraden zijn van die doelgroep
+```
 ## Contact
 
 For questions please [email me](mailto:pepijn.devue@student.hu.nl)
