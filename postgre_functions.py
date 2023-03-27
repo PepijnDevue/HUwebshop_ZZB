@@ -182,11 +182,7 @@ def sessions_to_postgre(cursor, sessions):
         session_row.append(session['_id'])
 
         if 'buid' in session:
-            cursor.execute(f"""SELECT _id FROM buid WHERE _id = '{session["buid"]}'""")
-            if len(cursor.fetchall()) > 0:
-                session_row.append(session['buid'])
-            else:
-                session_row.append(None)
+            session_row.append(session['buid'])
         else:
             session_row.append(None)
 
