@@ -179,39 +179,37 @@ def sessions_to_postgre(cursor, sessions):
         # Create a empty list for the session_rows.
         session_row = []
 
-        session_row.append(session['_id'])
+        
 
         if 'buid' in session:
-            cursor.execute(f"""SELECT _id FROM buid WHERE _id = '{session["buid"]}'""")
-            if len(cursor.fetchall()) > 0:
-                session_row.append(session['buid'])
-            else:
-                session_row.append(None)
+            session_row.append(session['buid'])     #DIT VERWIJDEREN
         else:
             session_row.append(None)
-
-        # Loop trough the rest of the session keys.
-        for key in session_keys:
-            # If key is present, add it to the session_row
-            if key in session:
-                session_row.append(session[key])
-            # Otherwise fill that place with None to prevent errors with execute_batch
-            else:
-                session_row.append(None)
+        
+        session_row.append(session['_id'])
+        
+        # # Loop trough the rest of the session keys.
+        # for key in session_keys:
+        #     # If key is present, add it to the session_row
+        #     if key in session:
+        #         session_row.append(session[key])
+        #     # Otherwise fill that place with None to prevent errors with execute_batch
+        #     else:
+        #         session_row.append(None)
 
         session_values.append(tuple(session_row))
 
-        # add to session_order
-        if 'products' in session:
-            for product in session['products']:
-                # Here we check if the product actually exists in the database.
-                if product in product_id_values:
-                    order_values.append((product, session['_id']))
-
-    # Execute the first batch
-    execute_batch(cursor, "INSERT INTO user_session (_id, buid, preference_brand, preference_category, preference_gender, preference_sub_category, preference_sub_sub_category, preference_promos, preference_product_type, preference_product_size) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", session_values)
-    # Execute the second batch
-    execute_batch(cursor, "INSERT INTO session_order (product_id, session_id) VALUES (%s, %s)", order_values)
+        # # add to session_order
+        # if 'products' in session:
+        #     for product in session['products']:
+        #         # Here we check if the product actually exists in the database.
+        #         if product in product_id_values:
+        #             order_values.append((product, session['_id']))
+    execute_batch(cursor, "UPDATE user_session SET buid = %s where _id = %s", session_values)
+    # # Execute the first batch
+    # execute_batch(cursor, "INSERT INTO user_session (_id, buid, preference_brand, preference_category, preference_gender, preference_sub_category, preference_sub_sub_category, preference_promos, preference_product_type, preference_product_size) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", session_values)
+    # # Execute the second batch
+    # execute_batch(cursor, "INSERT INTO session_order (product_id, session_id) VALUES (%s, %s)", order_values)
     
 def close_postgre(cursor, connection):
     """

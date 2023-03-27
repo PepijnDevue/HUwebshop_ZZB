@@ -142,15 +142,15 @@ def get_session_batch(batch_size, cursor):
     item_dicts = []
 
     # a list of keys wanted for the data transfer
-    keys = ['_id',
-            'preferences.brand',
-            'preferences.category',
-            'preferences.gender',
-            'preferences.sub_category',
-            'preferences.sub_sub_category',
-            'preferences.promos',
-            'preferences.product_type',
-            'preferences.product_size']
+    keys = ['_id']#,
+            # 'preferences.brand',
+            # 'preferences.category',
+            # 'preferences.gender',
+            # 'preferences.sub_category',
+            # 'preferences.sub_sub_category',
+            # 'preferences.promos',
+            # 'preferences.product_type',
+            # 'preferences.product_size']
 
     # keep track of the amount of records retrieved
     count = 0
@@ -158,7 +158,7 @@ def get_session_batch(batch_size, cursor):
     # loop through the data from mongoDB
     for record in cursor:
         # only save session from humans
-        if 'user_agent' in record and record['user_agent']['flags']['is_bot'] == False:
+        if 'user_agent' in record:
             # create a dict with only the necessary info per record
             item_dict = {}
             # check if the current record includes the wanted info
@@ -175,17 +175,17 @@ def get_session_batch(batch_size, cursor):
                     if key in record:
                         item_dict[key] = record[key]
 
-            # add ordered products
-            if 'order' in record and record['order'] != None:
-                item_dict['products'] = record['order']['products']
+            # # add ordered products
+            # if 'order' in record and record['order'] != None:
+            #     item_dict['products'] = record['order']['products']
 
             # add buid
-            if 'buid' in record and len(record['buid']) == 1:
-                if type(record['buid'][0] == list):
-                    item_dict['buid'] = record['buid'][0][0]
-                else:
-                    item_dict['buid'] = record['buid'][0]
-
+            if 'buid' in record and record['buid'] != None:
+                # if type(record['buid'][0] == list):
+                #     item_dict['buid'] = record['buid'][0][0]
+                # else:
+                item_dict['buid'] = record['buid'][0]
+            count+= 1
             item_dicts.append(item_dict)
             if count > batch_size:
                 return item_dicts, False
