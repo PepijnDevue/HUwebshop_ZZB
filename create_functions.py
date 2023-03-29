@@ -53,15 +53,17 @@ def create_row_top_category(cursor):
     for session in sessions:
         # get user profile that is connected to the session
         cursor.execute('select user_profile_id from buid where buid._id = %s', (session[0],))
-        user_profile_id = cursor.fetchall()[0][0]
+        result = cursor.fetchall()
+        if len(result) == 2:
+            user_profile_id = result[0][0]
 
-        # count the category
-        if user_profile_id not in freq_dict:
-            freq_dict[user_profile_id] = {}
-        if session[1] in freq_dict[user_profile_id]:
-            freq_dict[user_profile_id][session[1]] += 1
-        else:
-            freq_dict[user_profile_id][session[1]] = 1
+            # count the category
+            if user_profile_id not in freq_dict:
+                freq_dict[user_profile_id] = {}
+            if session[1] in freq_dict[user_profile_id]:
+                freq_dict[user_profile_id][session[1]] += 1
+            else:
+                freq_dict[user_profile_id][session[1]] = 1
 
     # take the category that is most preferred by each user
     for profile_id in freq_dict:

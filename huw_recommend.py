@@ -57,7 +57,7 @@ class Random_postgre(Resource):
             count (int): The amount of product id's returned
 
         Returns:
-            tuple: returns a list of strings and an OK statuscode
+            tuple: returns a list of strings and an OK status code
         """
         # select the _id of an amount of random products where amount is equal to count
         cursor.execute('select _id from product order by random() limit %s', (count,))
@@ -70,4 +70,6 @@ class Random_postgre(Resource):
 # This method binds the Recom class to the REST API, to parse specifically
 # requests in the format described below.
 api.add_resource(Recom_mongo, "/<string:profileid>/<int:count>")
+
+# resources added by ZZB
 api.add_resource(Random_postgre, '/zzb/rand_pg/<int:count>')
