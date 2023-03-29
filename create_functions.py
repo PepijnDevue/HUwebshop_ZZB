@@ -43,7 +43,7 @@ def create_row_top_category(cursor):
     cursor.execute('ALTER TABLE user_profile ADD COLUMN IF NOT EXISTS top_category VARCHAR(255)')
 
     # fetch buid and preference_category from all user_sessions that have a buid
-    cursor.execute('select buid, preference_category from user_session where buid is not null')
+    cursor.execute('select buid, preference_category from user_session')
     sessions = cursor.fetchall()
 
     # create a frequency dict that will look like freq_dict[user][category] = n
