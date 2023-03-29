@@ -220,19 +220,30 @@ class HUWebshop(object):
         packet['shopping_cart_count'] = self.shoppingcartcount()
         return render_template(template, packet=packet)
 
-    """ ..:: Recommendation Functions ::.. """
-    def zzb_test(self, number):
-        resp = requests.get(self.recseraddress + '/zzb_test/' + str(number))
-        if resp.status_code == 200:
-            result = eval(resp.content.decode())
-            return result
-        return []
-    
+    """ ..:: Recommendation Functions ::.. """ 
     def random_from_pg(self, count):
-        resp = requests.get(self.recseraddress+'/zzb_rand_pg/'+str(count))
+        """
+        Send a request to huw_recommend.py for 4 random product_id's from postgre
+        Get necessary product info from mongoDB and return that to be recommended
+
+        Args:
+            count (int): The amount of products requested
+
+        Returns:
+            list: a list of dicts, each dict contains the necessary product info
+        """
+        # get the product_id's via an API call
+        resp = requests.get(self.recseraddress+'/zzb/rand_pg/'+str(count))
+        # if the status code is OK
         if resp.status_code == 200:
-            result = eval(resp.content.decode())
-            return result
+            # get the decoded list of product_id's
+            recs = eval(resp.content.decode())
+            queryfilter = {"_id": {"$in": recs}}
+            # get the necessary info from mondoDB
+            querycursor = self.database.products.find(queryfilter, self.productfields)
+            resultlist = list(map(self.prepproduct, list(querycursor)))
+            # return as list of dicts
+            return resultlist
         return []
 
     def recommendations(self, count):
@@ -247,9 +258,6 @@ class HUWebshop(object):
             queryfilter = {"_id": {"$in": recs}}
             querycursor = self.database.products.find(queryfilter, self.productfields)
             resultlist = list(map(self.prepproduct, list(querycursor)))
-            print(resultlist)
-            # prints this:
-            """[{'name': 'Adelante EDP Orange Bomb 100ml', 'price': '5,99', 'discount': '3 voor 15', 'smallimage': '', 'bigimage': '', 'id': '22349'}, {'name': 'Lenzen Brown', 'price': '9,98', 'smallimage': '', 'bigimage': '', 'id': '36630'}, {'name': 'Converse Rugtas Grijs', 'price': '19,98', 'smallimage': '', 'bigimage': '', 'id': '40784'}, {'name': 'Wilkinson Wegwerpmesjes Xtreme 3 Beauty 4st', 'price': '3,99', 'discount': '3 voor 10', 'smallimage': '', 'bigimage': '', 'id': '8419'}]"""
             return resultlist
         return []
 
@@ -276,17 +284,13 @@ class HUWebshop(object):
             pagepath = "/producten/"+("/".join(nononescats))+"/"
         else:
             pagepath = "/producten/"
-        # print(self.zzb_test(1234))
-        # print(self.random_from_pg(4))
         return self.renderpackettemplate('products.html', {'products': prodlist, \
             'productcount': prodcount, \
             'pstart': skipindex + 1, \
             'pend': skipindex + session['items_per_page'] if session['items_per_page'] > 0 else prodcount, \
             'prevpage': pagepath+str(page-1) if (page > 1) else False, \
             'nextpage': pagepath+str(page+1) if (session['items_per_page']*page < prodcount) else False, \
-            # ZZB get 4 products recommended
-            'r_products':self.recommendations(4), \
-            # 'r_products':self.random_from_pg(4), \
+            'r_products':self.random_from_pg(4), \
             'r_type':list(self.recommendationtypes.keys())[0],\
             'r_string':list(self.recommendationtypes.values())[0]\
             })
@@ -297,8 +301,7 @@ class HUWebshop(object):
         product = self.database.products.find_one({"_id":str(productid)})
         return self.renderpackettemplate('productdetail.html', {'product':product,\
             'prepproduct':self.prepproduct(product),\
-            # ZZB get 4 products recommended
-            'r_products':self.recommendations(4), \
+            'r_products':self.random_from_pg(4), \
             'r_type':list(self.recommendationtypes.keys())[1],\
             'r_string':list(self.recommendationtypes.values())[1]})
 
@@ -310,8 +313,7 @@ class HUWebshop(object):
             product["itemcount"] = tup[1]
             i.append(product)
         return self.renderpackettemplate('shoppingcart.html',{'itemsincart':i,\
-            # ZZB get 4 products recommended
-            'r_products':self.recommendations(4), \
+            'r_products':self.random_from_pg(4), \
             'r_type':list(self.recommendationtypes.keys())[2],\
             'r_string':list(self.recommendationtypes.values())[2]})
 
