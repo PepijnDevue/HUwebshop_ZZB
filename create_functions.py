@@ -31,6 +31,9 @@ def create_table_most_recommended(cursor):
     # insert all rows into the table
     execute_batch(cursor, 'insert into most_recommended (product_id, frequency) values (%s, %s)', most_recommended_vals)
 
+    # insert all products the have not been recommended with a frequency of zero
+    cursor.execute('insert into most_recommended (product_id, frequency) select _id, 0 from product where not exists (select 1 from most_recommended where most_recommended.product_id = product._id)')
+
 def create_row_top_category(cursor):
     """
     Add the column top_category to the table user_profile
