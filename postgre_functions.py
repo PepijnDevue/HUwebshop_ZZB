@@ -233,4 +233,3 @@ def close_postgre(cursor, connection):
     # Connection gets closed.
     print("Connections gets closed")
     connection.close()
-    print('Transfer complete')

@@ -220,7 +220,46 @@ class HUWebshop(object):
         packet['shopping_cart_count'] = self.shoppingcartcount()
         return render_template(template, packet=packet)
 
-    """ ..:: Recommendation Functions ::.. """
+    """ ..:: Recommendation Functions ::.. """ 
+    def random_from_pg(self):
+        """
+        Send a request to huw_recommend.py for 4 random product_id's from postgre
+        Get necessary product info from mongoDB and return that to be recommended
+
+        Args:
+            count (int): The amount of products requested
+
+        Returns:
+            list: a list of dicts, each dict contains the necessary product info
+        """
+        # get the product_id's via an API call
+        resp = requests.get(self.recseraddress+'/zzb/rand_pg')
+        # if the status code is OK
+        if resp.status_code == 200:
+            # get the decoded list of product_id's
+            recs = eval(resp.content.decode())
+            queryfilter = {"_id": {"$in": recs}}
+            # get the necessary info from mondoDB
+            querycursor = self.database.products.find(queryfilter, self.productfields)
+            resultlist = list(map(self.prepproduct, list(querycursor)))
+            # return as list of dicts
+            return resultlist
+        return []
+    
+    def product_recommend(self, product_id):
+        # get the product_id's via an API call
+        resp = requests.get(self.recseraddress+'/zzb/product/'+product_id)
+        # if the status code is OK
+        if resp.status_code == 200:
+            # get the decoded list of product_id's
+            recs = eval(resp.content.decode())
+            queryfilter = {"_id": {"$in": recs}}
+            # get the necessary info from mondoDB
+            querycursor = self.database.products.find(queryfilter, self.productfields)
+            resultlist = list(map(self.prepproduct, list(querycursor)))
+            # return as list of dicts
+            return resultlist
+        return []
 
     def recommendations(self, count):
         """ This function returns the recommendations from the provided page
@@ -266,7 +305,7 @@ class HUWebshop(object):
             'pend': skipindex + session['items_per_page'] if session['items_per_page'] > 0 else prodcount, \
             'prevpage': pagepath+str(page-1) if (page > 1) else False, \
             'nextpage': pagepath+str(page+1) if (session['items_per_page']*page < prodcount) else False, \
-            'r_products':self.recommendations(4), \
+            'r_products':self.random_from_pg(), \
             'r_type':list(self.recommendationtypes.keys())[0],\
             'r_string':list(self.recommendationtypes.values())[0]\
             })
@@ -277,7 +316,7 @@ class HUWebshop(object):
         product = self.database.products.find_one({"_id":str(productid)})
         return self.renderpackettemplate('productdetail.html', {'product':product,\
             'prepproduct':self.prepproduct(product),\
-            'r_products':self.recommendations(4), \
+            'r_products':self.product_recommend(str(productid)), \
             'r_type':list(self.recommendationtypes.keys())[1],\
             'r_string':list(self.recommendationtypes.values())[1]})
 
@@ -289,7 +328,7 @@ class HUWebshop(object):
             product["itemcount"] = tup[1]
             i.append(product)
         return self.renderpackettemplate('shoppingcart.html',{'itemsincart':i,\
-            'r_products':self.recommendations(4), \
+            'r_products':self.random_from_pg(), \
             'r_type':list(self.recommendationtypes.keys())[2],\
             'r_string':list(self.recommendationtypes.values())[2]})
 
