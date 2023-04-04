@@ -95,6 +95,60 @@ class Recom_product_page(Resource):
         # return the first 4 products
         return(prod_ids, 200)
 
+class Recom_subcategory(Resource):
+    """This class represents the API that provides a recommendations for the
+    shopping cart based on the profile"""
+
+    def get(self, subcategory):
+        """
+        Get 4 products from postgre to recommend based on the
+        profile id
+
+        Args:
+            profile_id (str): The given product to base recommendation on profile id
+
+        Return: (Dave lees dit aub)
+            Tuple with product id's and API response code
+                example: return(prod_ids, 200)
+        """
+        """*** IN TE VULLEN DOOR DAVE***"""
+
+class Recom_category(Resource):
+    """This class represents the API that provides a recommendations for the
+    shopping cart based on the profile"""
+
+    def get(self, category):
+        """
+        Get 4 products from postgre to recommend based on the
+        profile id
+
+        Args:
+            profile_id (str): The given product to base recommendation on profile id
+
+        Return: (Dave lees dit aub)
+            Tuple with product id's and API response code
+                example: return(prod_ids, 200)
+        """
+        """*** IN TE VULLEN DOOR DAVE***"""
+
+class Recom_shopping_cart(Resource):
+    """This class represents the API that provides a recommendations for the
+    shopping cart based on the profile"""
+
+    def get(self, profile_id):
+        """
+        Get 4 products from postgre to recommend based on the
+        profile id
+
+        Args:
+            subcategory (str): The given profile_id to base recommendation on profile_id
+
+        Return: (Dave lees dit aub)
+            Tuple with product id's and API response code
+                example: return(prod_ids, 200)
+        """
+        """*** IN TE VULLEN DOOR DAVE***"""
+
     
 
 # This method binds the Recom class to the REST API, to parse specifically
@@ -104,3 +158,6 @@ api.add_resource(Recom_mongo, "/<string:profileid>/<int:count>")
 # resources added by ZZB
 api.add_resource(Random_postgre, '/zzb/rand_pg')
 api.add_resource(Recom_product_page, '/zzb/product/<string:product_id>')
+api.add_resource(Recom_shopping_cart, '/zzb/winkelmand/<string:profile_id>')
+api.add_resource(Recom_subcategory, '/zzb/winkelmand/<string:subcategory>')
+api.add_resource(Recom_category, '/zzb/winkelmand/<string:category>')
