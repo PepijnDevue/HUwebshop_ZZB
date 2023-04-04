@@ -40,8 +40,7 @@ create table user_session(
     preference_sub_sub_category varchar(255),
     preference_promos varchar(255),
     preference_product_type varchar(255),
-    preference_product_size varchar(255),
-    foreign key (buid) references buid(_id)
+    preference_product_size varchar(255)
 );
 
 create table prev_recommended(

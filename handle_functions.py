@@ -36,14 +36,13 @@ def handle_2c_3(mongo_db):
     print(f"The product which price deviates the most from the product {random_product['name']} with the price {round(int(random_product['selling_price'])/100, 2)} is {max_deviated_product['name']} with a price of {round(int(max_deviated_product['selling_price'])/100, 2)} euros")
     
 
-def handle_products(mongo_db, postgre_cursor, postgre_connection):
+def handle_products(mongo_db, postgre_cursor):
     """
     Retrieves useful product information from MongoDB and transfers it to a relational database.
 
     Args:
         mongo_db: A MongoDB object used to connect to the MongoDB database.
         postgre_cursor: A cursor object used to execute PostgreSQL commands.
-        postgre_connection: A connection object to a PostgreSQL database.
 
     Returns:
         None
@@ -62,7 +61,7 @@ def handle_products(mongo_db, postgre_cursor, postgre_connection):
         # manipulate the data so it fits in the relational database
         item_dicts = fit_data_functions.fit_product_data(item_dicts)
         # transfer the data to the relational database
-        postgre_functions.products_to_postgre(postgre_cursor, item_dicts, postgre_connection)
+        postgre_functions.products_to_postgre(postgre_cursor, item_dicts)
 
 def handle_profiles(mongo_db, postgre_cursor):
     """
@@ -86,7 +85,7 @@ def handle_profiles(mongo_db, postgre_cursor):
     done = False
 
     # transfer the profiles in batches to increase performance
-    batch_size = 100000
+    batch_size = 50000
 
     while not done:
         # get a batch of information from mongodb

@@ -1,7 +1,6 @@
 # imports
 import psycopg2
 from psycopg2.extras import execute_batch
-import json
 
 def open_postgre():
     """
@@ -29,54 +28,57 @@ def open_postgre():
     # Here we return the values
     return cursor, connection
 
-def products_to_postgre(cursor, products, connection):
+def products_to_postgre(cursor, products):
     """
     Transfer all the fitted data collected from MongoDB and insert it into the Postgres database.
 
     Parameters:
         cursor: The cursor to execute SQL queries.
         products: A list full of dictionaries with all the information about the products that we want to insert into the Postgres database.
-        connection: The connection to the database to commit the changes add the end of all the queries being made in the cursor.
 
     Returns:
         None
     """
     # Here we create a empty list that we wil use in the execute batch later in the function
     product_batch_values = []
+    
+    # Here we create a filled list with every key that we are searching for
+    product_keys = ['_id',
+                    'brand',
+                    'category',
+                    'colour',
+                    'fast_mover',
+                    'gender',
+                    'product_name',
+                    'price',
+                    'discount',
+                    'target_group',
+                    'size',
+                    'age',
+                    'series',
+                    'product_type',
+                    'sub_category',
+                    'sub_sub_category',
+                    'sub_sub_sub_category']
 
     # Loops trough all the products.
     for product in products:
-        # get the list of rows
-        row_list = list(product.keys())
+        # Create a list that will contain all product information of one row
+        product_row = []
 
-        # get the list of values
-        val_list = [product[key] for key in row_list]
-        dict_to_string = json.dumps(val_list[2], ensure_ascii=False)
-        # if val_list[2]
-        val_list[2] = f'{dict_to_string}'
-        # print(val_list)
-        print(val_list)
+        # Loop trough the product keys.
+        for key in product_keys:
+            # If key is present, add it to the session_row
+            if key in product:
+                product_row.append(product[key])
+            # Otherwise fill that place with None to prevent errors with execute_batch
+            else:
+                product_row.append(None)
 
-        # testString = json.dump(val_list[3])
-        # print(testString)
-        product_batch_values.append((val_list))
-
-
-        # key_string = ", ".join(row_list)
-        # print(f"wat de fuck is key string \n {key_string} \n")
-        # print(f"value string values \n {value_string} \n")
-        # use %s to prevent errors with names like ' L 'Oreal '
-        # value_string = ', '.join(['%s' for _ in val_list])
-
-        # print(f"wat de fuck is key string \n {key_string} \n")
-        # print(f"value string values \n {value_string} \n")
-        # print(f"vallist values ==== \n\n {val_list} \n\n\n\n")
-        # cursor.execute(f"INSERT INTO product ({key_string}) VALUES ({value_string})")
+        # Add a tuple version of the row_information to a list to later use for execute_batch
+        product_batch_values.append((product_row))
     
-    execute_batch(cursor,"INSERT INTO product (_id, brand, category, fast_mover, gender, size, colour, price, product_name, target_group, discount) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", product_batch_values)
-
-    # Commit all the changes to the database.
-    connection.commit()
+    execute_batch(cursor,"INSERT INTO product (_id, brand, category, colour, fast_mover, gender, product_name, price, discount, target_group, size, age, series, product_type, sub_category, sub_sub_category, sub_sub_sub_category) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", product_batch_values)
 
 def profiles_to_postgre(cursor, profiles):
     """
@@ -180,11 +182,7 @@ def sessions_to_postgre(cursor, sessions):
         session_row.append(session['_id'])
 
         if 'buid' in session:
-            cursor.execute(f"""SELECT _id FROM buid WHERE _id = '{session["buid"]}'""")
-            if len(cursor.fetchall()) > 0:
-                session_row.append(session['buid'])
-            else:
-                session_row.append(None)
+            session_row.append(session['buid'])
         else:
             session_row.append(None)
 
@@ -235,4 +233,3 @@ def close_postgre(cursor, connection):
     # Connection gets closed.
     print("Connections gets closed")
     connection.close()
-    print('Transfer complete')
