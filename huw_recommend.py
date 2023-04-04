@@ -131,6 +131,26 @@ class Recom_category(Resource):
         """
         """*** IN TE VULLEN DOOR DAVE***"""
 
+        # Here we make the querry
+        query = """SELECT rec1_product_id,rec2_product_id,rec3_product_id,rec4_product_id 
+                   FROM category_recomendation 
+                   WHERE category = %s;
+                """
+        
+        # Here we fetch the result from the query
+        cursor.execute(query,(category,))
+
+        # Here we fetch the result from the above cursor execute.
+        result = cursor.fetchall()
+        
+        # Products ids are being put in a list instead of the tupel they come in when you use fetch 
+        product_ids = [product_id for product_id in result[0]]
+
+        print(product_ids)
+        # Returns the product_ids and a api response code inside a tuple
+        return ((product_ids,200))
+
+
 class Recom_shopping_cart(Resource):
     """This class represents the API that provides a recommendations for the
     shopping cart based on the profile"""
@@ -149,7 +169,23 @@ class Recom_shopping_cart(Resource):
         """
         """*** IN TE VULLEN DOOR DAVE***"""
 
-    
+
+        # Query that gets 4 product_ids from the data base out of the table profile_recomendation based on the profile_id
+        query = """SELECT rec1_product_id,rec2_product_id,rec3_product_id,rec4_product_id 
+                    FROM profile_recommendation 
+                    WHERE profile_id = %s;
+                """
+        # Here we execute the querry with the value of the profile_id
+        cursor.execute(query,(profile_id,))
+        # Here we fetch the result from the above cursor execute.
+        result = cursor.fetchall()
+        
+        # Products ids are being put in a list instead of the tupel they come in when you use fetch 
+        product_ids = [product_id for product_id in result[0]]
+
+        # Returns the product_ids and a api response code inside a tuple
+        return ((product_ids,200))
+
 
 # This method binds the Recom class to the REST API, to parse specifically
 # requests in the format described below.
@@ -159,5 +195,5 @@ api.add_resource(Recom_mongo, "/<string:profileid>/<int:count>")
 api.add_resource(Random_postgre, '/zzb/rand_pg')
 api.add_resource(Recom_product_page, '/zzb/product/<string:product_id>')
 api.add_resource(Recom_shopping_cart, '/zzb/winkelmand/<string:profile_id>')
-api.add_resource(Recom_subcategory, '/zzb/winkelmand/<string:subcategory>')
-api.add_resource(Recom_category, '/zzb/winkelmand/<string:category>')
+api.add_resource(Recom_subcategory, '/zzb/subcategory/<string:subcategory>')
+api.add_resource(Recom_category, '/zzb/category/<string:category>')
