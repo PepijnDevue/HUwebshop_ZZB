@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="b377fabc-9a9a-4aca-8a64-1f2ad119352e" name="Changes" comment="" />
+    <list default="true" id="b377fabc-9a9a-4aca-8a64-1f2ad119352e" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -45,7 +47,7 @@
     &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
   }
 }</component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Flask server.Flask (huw.py)">
     <configuration name="HUwebshop" type="PythonConfigurationType" factoryName="Python">
       <module name="HUwebshop" />
       <option name="INTERPRETER_OPTIONS" value="" />
