@@ -34,15 +34,15 @@ cursor = connection.cursor()
 
 class Recom_mongo(Resource):
     """ This class represents the REST API that provides the recommendations for
-    the webshop. At the moment, the API simply returns a random set of products taken
+    the web shop. At the moment, the API simply returns a random set of products taken
     out of mongoDB to recommend."""
 
-    def get(self, profileid, count):
+    def get(self, profile_id, count):
         """ This function represents the handler for GET requests coming in
         through the API. It currently returns a random sample of products. """
-        randcursor = database.products.aggregate([{ '$sample': { 'size': count } }])
-        prodids = list(map(lambda x: x['_id'], list(randcursor)))
-        return prodids, 200
+        rand_cursor = database.products.aggregate([{ '$sample': { 'size': count } }])
+        prod_ids = list(map(lambda x: x['_id'], list(rand_cursor)))
+        return prod_ids, 200
     
 class Random_postgre(Resource):
     """This class represents the API that provides random recommendations from
@@ -67,39 +67,39 @@ class Recom_product_page(Resource):
     product page based on target_group"""
 
     def get(self, product_id):
-        """
-        Get 4 products from postgre to recommend based on the
-        target_group of a given product
+        prod_ids = []
 
-        Args:
-            product_id (str): The given product to base recommendation on
-        """
-        # get the product group
-        cursor.execute('select target_group from product where _id = %s', (product_id,))
-        group = cursor.fetchall()[0][0]
+        tables = ['series_products', 'sscat_products', 'brand_products', 'category_products', 'group_products']
+        table_index = 0
 
-        # if no group is know, recommend the generally most recommended products
-        if group == None:
-            cursor.execute('select product_id from most_recommended order by frequency desc limit 5')
-            products = [i[0] for i in cursor.fetchall()]
-        else:
-            cursor.execute('select * from top_group_product where target_group = %s', (group,))
-            products = list(cursor.fetchall()[0][1:6])
+        cursor.execute('select series, sub_sub_category, brand, category, target_group from product where _id = %s', (product_id,))
+        trait_vals = cursor.fetchall()[0]
 
-        # dont recommend the same product that is inputted
-        if product_id in products:
-            products.remove(product_id)
-
-        prod_ids = products[:4]
+        traits = ['series', 'sub_sub_category', 'brand', 'category', 'target_group']
+        while len(prod_ids) < 4:
+            if trait_vals[table_index] != None:
+                cursor.execute(f"select product_ids from {tables[table_index]} where {traits[table_index]} = '{trait_vals[table_index]}'")
+                fetch_list = cursor.fetchall()[0][0].split(', ')
+                if product_id in fetch_list:
+                    fetch_list.remove(product_id)
+                prod_ids.extend(fetch_list)
+            table_index += 1
+            if table_index > 4:
+                cursor.execute('select _id from product where recommendable = true and discount = true order by random() limit 5')
+                fetch_list = [i[0] for i in cursor.fetchall()]
+                if product_id in fetch_list:
+                    fetch_list.remove(product_id)
+                prod_ids.extend(fetch_list)
 
         # return the first 4 products
-        return(prod_ids, 200)
+        print(prod_ids)
+        return(prod_ids[:4], 200)
 
     
 
 # This method binds the Recom class to the REST API, to parse specifically
 # requests in the format described below.
-api.add_resource(Recom_mongo, "/<string:profileid>/<int:count>")
+api.add_resource(Recom_mongo, "/<string:profile_id>/<int:count>")
 
 # resources added by ZZB
 api.add_resource(Random_postgre, '/zzb/rand_pg')

@@ -11,7 +11,7 @@ app = Flask(__name__)
 app.secret_key = os.urandom(16)
 
 class HUWebshop(object):
-    """ This class combines all logic behind the HU Example Webshop project. 
+    """ This class combines all logic behind the HU Example Web shop project. 
     Note that all rendering is performed within the templates themselves."""
 
     app = None
