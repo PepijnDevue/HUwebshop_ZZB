@@ -68,31 +68,47 @@ class Recom_product_page(Resource):
 
     def get(self, product_id):
         """
-        
+        get 4 recommendable products based on a given product id
 
         Args:
-            product_id (_type_): _description_
+            product_id (str): The product on which the recommendation has to be based
+        Return:
+            A list of 4 product ids to recommend and status code OK
         """
+        # list to return
         prod_ids = []
 
+        # the tables to look at in order
         tables = ['series_products', 'sscat_products', 'brand_products', 'category_products', 'group_products']
         table_index = 0
 
+        # the values of these columns for the given product
         cursor.execute('select series, sub_sub_category, brand, category, target_group from product where _id = %s', (product_id,))
         trait_vals = cursor.fetchall()[0]
 
+        # the column names to retrieve recommendable products from
         traits = ['series', 'sub_sub_category', 'brand', 'category', 'target_group']
+
+        # while not enough recommendations have been retrieved yet, keep repeating
         while len(prod_ids) < 4:
+            # if the given product has the current trait
             if trait_vals[table_index] != None:
+                # get the recommendable products that share the same trait
                 cursor.execute(f"select product_ids from {tables[table_index]} where {traits[table_index]} = '{trait_vals[table_index]}'")
                 fetch_list = cursor.fetchall()[0][0].split(', ')
+                # dont recommend the product that is given
                 if product_id in fetch_list:
                     fetch_list.remove(product_id)
                 prod_ids.extend(fetch_list)
+            # look for the next trait
             table_index += 1
+            # if all traits are None, get products that are generally recommendable
             if table_index > 4:
+                # get 5 products that are recommendable and on discount
                 cursor.execute('select _id from product where recommendable = true and discount = true order by random() limit 5')
                 fetch_list = [i[0] for i in cursor.fetchall()]
+
+                # dont recommend the product that is given
                 if product_id in fetch_list:
                     fetch_list.remove(product_id)
                 prod_ids.extend(fetch_list)
