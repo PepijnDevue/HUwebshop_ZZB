@@ -95,27 +95,45 @@ class Recom_product_page(Resource):
         # return the first 4 products
         return(prod_ids, 200)
 
-class Recom_subcategory(Resource):
-    """This class represents the API that provides a recommendations for the
-    shopping cart based on the profile"""
+# class Recom_subcategory(Resource):
+#     """This class represents the API that provides a recommendations for the
+#     shopping cart based on the profile"""
 
-    def get(self, subcategory):
-        """
-        Get 4 products from postgre to recommend based on the
-        profile id
+#     def get(self, subcategory):
+#         """
+#         Get 4 products from postgre to recommend based on the
+#         profile id
 
-        Args:
-            profile_id (str): The given product to base recommendation on profile id
+#         Args:
+#             profile_id (str): The given product to base recommendation on profile id
 
-        Return: (Dave lees dit aub)
-            Tuple with product id's and API response code
-                example: return(prod_ids, 200)
-        """
-        """*** IN TE VULLEN DOOR DAVE***"""
+#         Return: (Dave lees dit aub)
+#             Tuple with product id's and API response code
+#                 example: return(prod_ids, 200)
+#         """
+#         """*** IN TE VULLEN DOOR DAVE***"""
 
 class Recom_category(Resource):
     """This class represents the API that provides a recommendations for the
     shopping cart based on the profile"""
+    encode_dict = {
+        'gezond-en-verzorging':"Gezond & verzorging",
+        'huishouden':"Huishouden",
+        'wonen-en-vrije-tijd':"Wonen & vrije tijd",
+        'kleding-en-sieraden':"Kleding & sieraden",
+        'make-up-en-geuren':"Make-up & geuren",
+        'baby-en-kind':"Baby & kind",
+        'eten-en-drinken':"Eten & drinken",
+        'elektronica-en-media':"Elektronica & media",
+        'opruiming':"Opruiming",
+        'black-friday':"Black Friday",
+        'cadeau-ideeen':"Cadeau ideeën",
+        'op-is-opruiming':"op=opruiming",
+        '50-procent-korting':"50% korting",
+        'nieuw':"Nieuw",
+        'extra-deals':"Extra Deals",
+        'folder-artikelen':"Folder artikelen"
+    }
 
     def get(self, category):
         """
@@ -132,6 +150,7 @@ class Recom_category(Resource):
         """*** IN TE VULLEN DOOR DAVE***"""
 
         # Here we make the querry
+        category = self.encode_dict[category]
         query = """SELECT rec1_product_id,rec2_product_id,rec3_product_id,rec4_product_id 
                    FROM category_recomendation 
                    WHERE category = %s;
@@ -142,14 +161,13 @@ class Recom_category(Resource):
 
         # Here we fetch the result from the above cursor execute.
         result = cursor.fetchall()
-        
-        # Products ids are being put in a list instead of the tupel they come in when you use fetch 
+
+        # Products ids are being put in a list instead of the tupel they come in when you use fetch
         product_ids = [product_id for product_id in result[0]]
 
-        print(product_ids)
+        
         # Returns the product_ids and a api response code inside a tuple
-        return ((product_ids,200))
-
+        return(product_ids,200)
 
 class Recom_shopping_cart(Resource):
     """This class represents the API that provides a recommendations for the
@@ -168,8 +186,6 @@ class Recom_shopping_cart(Resource):
                 example: return(prod_ids, 200)
         """
         """*** IN TE VULLEN DOOR DAVE***"""
-
-
         # Query that gets 4 product_ids from the data base out of the table profile_recomendation based on the profile_id
         query = """SELECT rec1_product_id,rec2_product_id,rec3_product_id,rec4_product_id 
                     FROM profile_recommendation 
@@ -180,11 +196,21 @@ class Recom_shopping_cart(Resource):
         # Here we fetch the result from the above cursor execute.
         result = cursor.fetchall()
         
+        # Here we check if the result is empty.
+        # If its not we continue with the product ids that have been fetched from the query.
+        if len(result) > 0:  
         # Products ids are being put in a list instead of the tupel they come in when you use fetch 
-        product_ids = [product_id for product_id in result[0]]
+            product_ids = [product_id for product_id in result[0]]
 
+        # If the list is empty we recommend 4 random products
+        else:
+            cursor.execute("SELECT _id FROM product WHERE recommendable = true AND discount = true ORDER BY random() limit 4")
+            result = cursor.fetchall()
+            # Products ids are being put in a list instead of the tupel they come in when you use fetch 
+            product_ids = [product_id[0] for product_id in result]
+        
         # Returns the product_ids and a api response code inside a tuple
-        return ((product_ids,200))
+        return(product_ids,200)
 
 
 # This method binds the Recom class to the REST API, to parse specifically
@@ -195,5 +221,5 @@ api.add_resource(Recom_mongo, "/<string:profileid>/<int:count>")
 api.add_resource(Random_postgre, '/zzb/rand_pg')
 api.add_resource(Recom_product_page, '/zzb/product/<string:product_id>')
 api.add_resource(Recom_shopping_cart, '/zzb/winkelmand/<string:profile_id>')
-api.add_resource(Recom_subcategory, '/zzb/subcategory/<string:subcategory>')
+# api.add_resource(Recom_subcategory, '/zzb/subcategory/<string:subcategory>')
 api.add_resource(Recom_category, '/zzb/category/<string:category>')

@@ -4,6 +4,7 @@ from pymongo import MongoClient
 from dotenv import load_dotenv
 from bson.objectid import ObjectId
 
+
 # The secret key used for session encryption is randomly generated every time
 # the server is started up. This means all session data (including the 
 # shopping cart) is erased between server instances.
@@ -296,8 +297,10 @@ class HUWebshop(object):
         resp = requests.get(self.recseraddress+'/zzb/category/' + category)
         # if the status code is OK
         if resp.status_code == 200:
+            print('ok')
             # get the decoded list of product_id's
             recs = eval(resp.content.decode())
+            print(recs)
             queryfilter = {"_id": {"$in": recs}}
             # get the necessary info from mondoDB
             querycursor = self.database.products.find(queryfilter, self.productfields)
@@ -340,16 +343,18 @@ class HUWebshop(object):
         querycursor.skip(skipindex)
         querycursor.limit(session['items_per_page'])
         prodlist = list(map(self.prepproduct, list(querycursor)))
-        rec_result = []
-        # If a subcategory is selected/viewed
-        if cat2 is not None:
-            self.subcategory_recommend(cat2)
-        # If a category is selected/viewed
-        elif cat1 is not None:
-            self.category_recommend(cat1)
+        # # If a subcategory is selected/viewed
+        # if cat2 is not None:
+        #     rec_result = self.subcategory_recommend(cat2)
+        # # If a category is selected/viewed
+        # elif cat1 is not None:
+        #     rec_result = self.category_recommend(cat1)
         # If no category is selected/viewed
+        if cat1 == None:
+            rec_result = self.shoppingcart_recommend(session['profile_id'])
         else:
-            self.shoppingcart_recommend(session['profile_id'])
+            rec_result = self.category_recommend(cat1)
+
         if len(nononescats) > 1:
             pagepath = "/producten/"+("/".join(nononescats))+"/"
         else:
