@@ -53,60 +53,14 @@ def create_table_category_products(cursor):
     cursor.execute('truncate table category_products')
     cursor.execute("insert into category_products (category, product_ids) select category, array_to_string(array(SELECT unnest(array_agg(_id)) LIMIT 5), ', ') as product_ids from product where category is not null and recommendable is true group by category having count(*) > 1 order by category;")
 
-
-
-    # Imports
-import psycopg2
-from psycopg2.extras import execute_batch
-
-def make_Connection_To_DB():
+def get_All_categories(cursor):
     """
-    Opens up a connection to the database
-
-    Parameters:
-        None
-
-    Returns:
-        connection: the connection varible to the database
-    """
-    # Save the database name in a varible
-    db_name = 'huwebshop'
-
-    # Gets the password from a gitignore file
-    password_file = open('password.txt')
-    password = password_file.readline()
-
-    # create a connection
-    connection = psycopg2.connect(f'dbname={db_name} user=postgres password={password}')
-
-    # Here we return the connection
-    return connection
-
-def make_Cursor(db_Connection):
-    """
-    The function make_cursor() is used to make a cursor connected to a data base and is used to execute query's
-
-    Parameters:
-        db_connection: Connection to the database that is needed to make the cursor
-
-    Returns:
-        cursor: the cursor wil be used to execute query's with the database
-    """
-
-    # Creates a cursor to be used in querry_handler.py
-    cursor = db_Connection.cursor()
-    
-    # Returns the cursor
-    return cursor
-
-def get_All_Categorys(cursor):
-    """
-    The function get_all_Categorys() wil gather all the unique categorys from the table products.
+    The function get_all_categories() wil gather all the unique categories from the table products.
 
     Parameters:
         Cursor: The cursor will be used to execute the query's
     Return:
-        category_values: A list with all the unique categorys
+        category_values: A list with all the unique categories
     """
 
     # Here we make the query that we will use in the cursor
@@ -119,26 +73,26 @@ def get_All_Categorys(cursor):
 
     return category_values
 
-def get_Five_Producst_From_Category(cursor,categorys):
+def get_Five_products_From_Category(cursor,categories):
     """
     The Function get_Five_Products_From_Category() will get 5 products if possible from the database that are discounted.
 
     Parameters:
         Cursor: The cursor will be used to execute the query's
-        categorys: 
+        categories: 
     
     Return
-        category_Product_Values: a dictonary with a key 
+        category_Product_Values: a dictionary with a key 
     
     """
 
-    # here we create a empty dictonary
+    # here we create a empty dictionary
     category_Product_Values = {}
 
-    for category in categorys:
+    for category in categories:
 
-        # Here we make a querry and execute it
-        query = f"SELECT _id FROM product WHERE category = '{category}' AND discount = True LIMIT 5"
+        # Here we make a query and execute it
+        query = f"SELECT _id FROM product WHERE category = '{category}' AND discount = True LIMIT 5 AND recommendable = True"
         cursor.execute(query)
 
         # fetches all the result the cursor have gotten from the query
@@ -158,13 +112,13 @@ def get_Five_Producst_From_Category(cursor,categorys):
         # here we append the tuple full of product ids connected to the key that is the category
         category_Product_Values[category] = tuple(product_id_list)
             
-    # Returns the dictonary with the keys and the values that belongs to the key
+    # Returns the dictionary with the keys and the values that belongs to the key
     return category_Product_Values
 
-def make_Table_Category_Recommendation(cursor,connection):
+def make_Table_Category_Recommendation(cursor):
     """
-    The function make_Table_Category_Recommendation() is used to creat a table in the database called category_recommendation,
-    This table wil be filled with new data in the function insert_Into_Category_recomendation().
+    The function make_Table_Category_Recommendation() is used to create a table in the database called category_recommendation,
+    This table wil be filled with new data in the function insert_Into_Category_recommendation().
 
     Parameters:
         cursor: The cursor will be used to execute the query's 
@@ -175,8 +129,8 @@ def make_Table_Category_Recommendation(cursor,connection):
 
     # Here we write the query to create table
     query = f"""
-            DROP TABLE IF EXISTS category_recomendation;
-            CREATE TABLE category_recomendation(
+            TRUNCATE TABLE IF EXISTS category_recommendation;
+            CREATE TABLE IF NOT EXISTS category_recommendation(
                 category varchar(255),
                 rec1_product_id varchar(255),
                 rec2_product_id varchar(255),
@@ -189,15 +143,12 @@ def make_Table_Category_Recommendation(cursor,connection):
     # Here we use the cursor to execute the query.
     cursor.execute(query)
 
-    # Here we make sure to commit to the connection so that the executed query actually gets put into the database
-    connection.commit()
-
-def insert_Into_Category_recomendation(cursor,connection,category_product_values):
+def insert_Into_Category_recommendation(cursor,category_product_values):
     """
-    The function  insert_Into_Category_recomendation() wil insert the values into the category_recemendation tabel
+    The function  insert_Into_Category_recommendation() wil insert the values into the category_recommendation table
     
     Parameters:
-        cursor: The cursor will be used to execute the insert statments
+        cursor: The cursor will be used to execute the insert statements
         connection: the connection is used to commit the executes the cursor has done
         category_product_values: 
     return:
@@ -209,7 +160,7 @@ def insert_Into_Category_recomendation(cursor,connection,category_product_values
 
         # Here we create the query that we wil use in the cursor execute
         query = f"""
-                INSERT INTO category_recomendation (
+                INSERT INTO category_recommendation (
                     category, 
                     rec1_product_id, 
                     rec2_product_id, 
@@ -221,24 +172,19 @@ def insert_Into_Category_recomendation(cursor,connection,category_product_values
         # Here we execute the query
         cursor.execute(query)
 
-    # Commit  the executes made by the cursor.
-    connection.commit()
-
-
 
 def get_Most_Recommended_Sub_Category_For_User_id(cursor):
     """
-    The function get_Most_Recommended_Sub_Category_For_User_id() gets for every user_id a specific sub_categroy that has been recommended to them the most.
+    The function get_Most_Recommended_Sub_Category_For_User_id() gets for every user_id a specific sub_category that has been recommended to them the most.
 
 
-    Paremeters:
-        cursor: The cursor that is connected to the database used for querys
+    Parameters:
+        cursor: The cursor that is connected to the database used for queries
 
     Return:
-        result : a List full of tuples that containt the profile_id there preferenced sub_category and the amount they have looked ad said sub_category
+        result : a List full of tuples that contains the profile_id and the most preferred sub_category and the amount they have looked ad said sub_category
     """
 
-    # query source : Alot of help from ChatGpt
     # The query gets the highest prev recommended sub_category for each specific user id.
     query =  """SELECT temp.user_profile_id, temp.sub_category, temp.total_recommendations
                 FROM (
@@ -251,7 +197,7 @@ def get_Most_Recommended_Sub_Category_For_User_id(cursor):
                 WHERE temp.rn = 1
                 ORDER BY temp.user_profile_id, temp.total_recommendations DESC;"""
     
-    # Here we execute the querry.
+    # Here we execute the query.
     cursor.execute(query)
 
     # Fetches all the results 
@@ -260,51 +206,51 @@ def get_Most_Recommended_Sub_Category_For_User_id(cursor):
     #Returns the result
     return result
 
-def get_all_subcategorys(cursor):
+def get_all_subcategories(cursor):
     """
-    The function get_all_subcategorys() wil gather all the existing sub_categorys and put them in a list.
+    The function get_all_subcategories() wil gather all the existing sub_categories and put them in a list.
 
-    Paremeters:
-        cursor:The cursor that is connected to the database used for querys
+    Parameters:
+        cursor:The cursor that is connected to the database used for queries
     return:
-        get_all_sub_categorys : A List full of unique sub categorys
+        get_all_sub_categories : A List full of unique sub categories
     """
 
-    # Here we make the querry to execute the cursor to get all the sub_category's 
+    # Here we make the query to execute the cursor to get all the sub_category's 
     query =  """SELECT DISTINCT sub_category FROM product WHERE sub_category is not null;"""
 
     # Here we execute the query 
     cursor.execute(query)
 
-    get_all_sub_categorys = [str(sub_category[0]) for sub_category in cursor.fetchall()]
+    get_all_sub_categories = [str(sub_category[0]) for sub_category in cursor.fetchall()]
 
-    # This catches the error for the future in the query the littel ' in baby's messes up the query to get the prodcuts from the sub_category
-    for i in range(len(get_all_sub_categorys)):
-        if get_all_sub_categorys[i] == "Baby's en kinderen":
+    # This catches the error for the future in the query the little ' in baby's messes up the query to get the products from the sub_category
+    for i in range(len(get_all_sub_categories)):
+        if get_all_sub_categories[i] == "Baby's en kinderen":
             # Replaces the string
-            get_all_sub_categorys[i] = 'Baby''s en kinderen'
+            get_all_sub_categories[i] = 'Baby''s en kinderen'
 
-    return get_all_sub_categorys
+    return get_all_sub_categories
 
-def get_5Products_From_subcategory(cursor, sub_Categorys):
+def get_5Products_From_subcategory(cursor, sub_categories):
     """
-    The function get_5Products_From_Subcategory() Gets 5 products or less for each sub category and appends them in a dictonary
+    The function get_5Products_From_Subcategory() Gets 5 products or less for each sub category and appends them in a dictionary
 
-    Paremeters:
-        cursor:The cursor that is connected to the database used for querys
-        sub_Categorys: this is a list with all the existing sub_category's in the database
+    Parameters:
+        cursor:The cursor that is connected to the database used for queries
+        sub_categories: this is a list with all the existing sub_category's in the database
 
     return:
-        sub_Category_Product_Values: dictonary wit the sub_category as key and the 5 products as values
+        sub_Category_Product_Values: dictionary wit the sub_category as key and the 5 products as values
     """
-    # here we create a empty dictonary
-    sub_Category_Product_Values = {}
+    # here we create a empty dictionary
+    sub_category_product_values = {}
 
-    # Here we loop over all the sub_categorys
-    for sub_category in sub_Categorys:
+    # Here we loop over all the sub_categories
+    for sub_category in sub_categories:
 
         # Here we make the query
-        query = f"SELECT _id FROM product WHERE sub_category = '{sub_category}' LIMIT 5"
+        query = f"SELECT _id FROM product WHERE recommendable = True AND sub_category = '{sub_category}' LIMIT 5"
         # print(query)
         cursor.execute(query,sub_category)
 
@@ -323,10 +269,10 @@ def get_5Products_From_subcategory(cursor, sub_Categorys):
                 product_id_list.append(product)
 
         # here we append the tuple full of product ids connected to the key that is the category
-        sub_Category_Product_Values[sub_category] = tuple(product_id_list)
+        sub_category_product_values[sub_category] = tuple(product_id_list)
             
-    # Returns the dictonary with the keys and the values that belongs to the key
-    return sub_Category_Product_Values
+    # Returns the dictionary with the keys and the values that belongs to the key
+    return sub_category_product_values
 
 
 def link_Profile_Id_To_Products(sub_category_product_values,most_recommended_subcategory_profileid):
@@ -334,27 +280,27 @@ def link_Profile_Id_To_Products(sub_category_product_values,most_recommended_sub
     The function link_Profile_Id_To_Products() wil link te products that need to be recommended to a specific profile id.
     
     Parameters:
-        cursor:The cursor that is connected to the database used for querys
+        cursor:The cursor that is connected to the database used for queries
         sub_category_product_values: dict with the sub_category as key and 5 values appended to the key
-        most_recommended_subcategory_profileid: list with tupels that contain the profile_id and the sub_category that should be recommended
+        most_recommended_subcategory_profileid: list with tuples that contain the profile_id and the sub_category that should be recommended
 
     return
-        linked_profiles: a list with tupels that now contain the profile id linked to products based on the sub_category
+        linked_profiles: a list with tuples that now contain the profile id linked to products based on the sub_category
     
     """
 
-    # Make a empty dictonary where we wil add all the new values.
+    # Make a empty dictionary where we wil add all the new values.
     Linked_Profiles = {}
 
     # print(most_recommended_subcategory_profileid)
-    # Loopes trough all the profile information and then just looks add the key in the most_recommended_sub_category_profileid and just appends the value found there.
+    # Loops trough all the profile information and then just looks add the key in the most_recommended_sub_category_profileid and just appends the value found there.
     for profile_info in most_recommended_subcategory_profileid:
         # print(profile_info)
 
         if profile_info[1] == None:
             # checks if the category is None for a user if so we append a string
             Linked_Profiles[profile_info[0]] = "None"
-        # Replaces the string that wil actually go trough a querry the littel ' hinders the execute querys
+        # Replaces the string that wil actually go trough a query the little ' hinders the execute queries
         elif profile_info[1] == "Baby's en kinderen":
              Linked_Profiles[profile_info[0]] = sub_category_product_values['Baby''s en kinderen']
 
@@ -362,13 +308,13 @@ def link_Profile_Id_To_Products(sub_category_product_values,most_recommended_sub
             Linked_Profiles[profile_info[0]] = sub_category_product_values[profile_info[1]]
 
 
-    # Here we return the linked profiles dictonary
+    # Here we return the linked profiles dictionary
     return Linked_Profiles
 
 
-def create_profile_recommendation_table(cursor,connection):
+def create_profile_recommendation_table(cursor):
     """
-    The function create_profile_recommendation_table() creates a table for all the linked profiles to there recomended products to be inserte later.
+    The function create_profile_recommendation_table() creates a table for all the linked profiles to their recommended products to be inserted later.
 
 
     Parameters:
@@ -378,8 +324,8 @@ def create_profile_recommendation_table(cursor,connection):
         None:
     """
 
-    query = f"""DROP TABLE IF EXISTS profile_recommendation;
-            CREATE TABLE profile_recommendation(
+    query = f"""TRUNCATE TABLE IF EXISTS profile_recommendation;
+            CREATE TABLE IF NOT EXISTS profile_recommendation(
                 profile_id varchar(255),
                 rec1_product_id varchar(255),
                 rec2_product_id varchar(255),
@@ -390,12 +336,10 @@ def create_profile_recommendation_table(cursor,connection):
     
     # Execute the query
     cursor.execute(query)
-    # Commit the cursor query
-    connection.commit()
 
-def insert_into_profile_recommendation(cursor,connection,linked_profiles):
+def insert_into_profile_recommendation(cursor,linked_profiles):
     """
-    The function insert_into_profile_recommendation() is used to insert all the profiles linked to their products into the database table called profile_recomendations
+    The function insert_into_profile_recommendation() is used to insert all the profiles linked to their products into the database table called profile_recommendations
 
 
     Parameters:
@@ -427,9 +371,56 @@ def insert_into_profile_recommendation(cursor,connection,linked_profiles):
             
             # Here we execute the query
         cursor.execute(query)
-        
-        # print(query)
-        # Here we execute the query
 
-    # Commit  the executes made by the cursor.
-    connection.commit()
+def content_filtering(cursor):
+    """
+    The function content_filtering() will run all the necessary functions to be create 1 table in the database with the use of content filtering.
+
+    
+    Parameters:
+        cursor: The cursor will be used to execute the query's 
+        connection: the connection is used to commit the executes the cursor has done
+    return:
+        None 
+    
+    """
+    # First we get all the unique categories out of the table products
+    All_categories = get_All_categories(cursor)
+    
+    # Next is to get 5 products if they exist in that category based on if they are on sale.
+    five_Product_Category_Dict = get_Five_products_From_Category(cursor,All_categories)
+
+    # Next we make the table to inserts the values later on.
+    make_Table_Category_Recommendation(cursor)
+    
+    # Here we actually insert all the values in to the table created above
+    insert_Into_Category_recommendation(cursor,five_Product_Category_Dict)
+
+def collaborative_filtering(cursor):
+    """
+    The function collaborative_filtering() will run all the functions needed to create a new table based on collaborative_filtering.
+    
+    Parameters:
+        cursor: The cursor will be used to execute the query's 
+        connection: the connection is used to commit the executes the cursor has done
+    return:
+        None
+    """
+
+    # first we get all the recommended sub_categories for each unique user and store it in a variable to pass it on to a other function later on.
+    recommended_sub_category_for_profile_ids = get_Most_Recommended_Sub_Category_For_User_id(cursor)
+
+    # Here we get all the sub_categories that exists in the database and store it in a variable to pass it to a other function later on.
+    sub_categories = get_all_subcategories(cursor)
+
+    # Here we link all the categories to 5 product ids that can be recommended to a user later on.
+    five_products_linked_to_sub_category = get_5Products_From_subcategory(cursor,sub_categories)
+    
+    # Here we link the  user_ids to there own 5 products depended on the sub_category they have seen the most.
+    linked_profiles = link_Profile_Id_To_Products(five_products_linked_to_sub_category,recommended_sub_category_for_profile_ids)
+
+    # Here we call a function to create the table for the profile recommendation in the database
+    create_profile_recommendation_table(cursor)
+
+    # We insert everything in to the profiles
+    insert_into_profile_recommendation(cursor,linked_profiles)

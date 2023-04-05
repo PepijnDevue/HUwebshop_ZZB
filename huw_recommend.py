@@ -171,10 +171,10 @@ class Recom_category(Resource):
         """
         """*** IN TE VULLEN DOOR DAVE***"""
 
-        # Here we make the querry
+        # Here we make the query
         category = self.encode_dict[category]
         query = """SELECT rec1_product_id,rec2_product_id,rec3_product_id,rec4_product_id 
-                   FROM category_recomendation 
+                   FROM category_recommendation 
                    WHERE category = %s;
                 """
         
@@ -184,7 +184,7 @@ class Recom_category(Resource):
         # Here we fetch the result from the above cursor execute.
         result = cursor.fetchall()
 
-        # Products ids are being put in a list instead of the tupel they come in when you use fetch
+        # Products ids are being put in a list instead of the tuple they come in when you use fetch
         product_ids = [product_id for product_id in result[0]]
 
         
@@ -208,12 +208,12 @@ class Recom_shopping_cart(Resource):
                 example: return(prod_ids, 200)
         """
         """*** IN TE VULLEN DOOR DAVE***"""
-        # Query that gets 4 product_ids from the data base out of the table profile_recomendation based on the profile_id
+        # Query that gets 4 product_ids from the data base out of the table profile_recommendation based on the profile_id
         query = """SELECT rec1_product_id,rec2_product_id,rec3_product_id,rec4_product_id 
                     FROM profile_recommendation 
                     WHERE profile_id = %s;
                 """
-        # Here we execute the querry with the value of the profile_id
+        # Here we execute the query with the value of the profile_id
         cursor.execute(query,(profile_id,))
         # Here we fetch the result from the above cursor execute.
         result = cursor.fetchall()
@@ -221,14 +221,14 @@ class Recom_shopping_cart(Resource):
         # Here we check if the result is empty.
         # If its not we continue with the product ids that have been fetched from the query.
         if len(result) > 0:  
-        # Products ids are being put in a list instead of the tupel they come in when you use fetch 
+        # Products ids are being put in a list instead of the tuple they come in when you use fetch 
             product_ids = [product_id for product_id in result[0]]
 
         # If the list is empty we recommend 4 random products
         else:
             cursor.execute("SELECT _id FROM product WHERE recommendable = true AND discount = true ORDER BY random() limit 4")
             result = cursor.fetchall()
-            # Products ids are being put in a list instead of the tupel they come in when you use fetch 
+            # Products ids are being put in a list instead of the tuple they come in when you use fetch 
             product_ids = [product_id[0] for product_id in result]
         
         # Returns the product_ids and a api response code inside a tuple

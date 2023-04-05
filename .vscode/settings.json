@@ -3,6 +3,7 @@
         "categoryindex",
         "dbstring",
         "envvals",
+        "kinderen",
         "MONGODBPASSWORD",
         "MONGODBSERVER",
         "MONGODBUSER",

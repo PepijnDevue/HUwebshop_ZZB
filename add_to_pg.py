@@ -12,6 +12,8 @@ if __name__ == '__main__':
     create_rec_tables.create_table_series_products(cursor)
     create_rec_tables.create_table_sscat_products(cursor)
     create_rec_tables.create_table_category_products(cursor)
+    create_rec_tables.content_filtering(cursor)
+    create_rec_tables.collaborative_filtering(cursor)
 
     # save changes and close postgre connection safely
     postgre_functions.close_postgre(cursor, connection)
