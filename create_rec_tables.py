@@ -92,7 +92,7 @@ def get_Five_products_From_Category(cursor,categories):
     for category in categories:
 
         # Here we make a query and execute it
-        query = f"SELECT _id FROM product WHERE category = '{category}' AND discount = True LIMIT 5 AND recommendable = True"
+        query = f"SELECT _id FROM product WHERE category = '{category}' AND discount = True AND recommendable = True LIMIT 5"
         cursor.execute(query)
 
         # fetches all the result the cursor have gotten from the query
@@ -129,7 +129,7 @@ def make_Table_Category_Recommendation(cursor):
 
     # Here we write the query to create table
     query = f"""
-            TRUNCATE TABLE IF EXISTS category_recommendation;
+            DROP TABLE IF EXISTS category_recommendation;
             CREATE TABLE IF NOT EXISTS category_recommendation(
                 category varchar(255),
                 rec1_product_id varchar(255),
@@ -324,7 +324,7 @@ def create_profile_recommendation_table(cursor):
         None:
     """
 
-    query = f"""TRUNCATE TABLE IF EXISTS profile_recommendation;
+    query = f"""DROP TABLE IF EXISTS profile_recommendation;
             CREATE TABLE IF NOT EXISTS profile_recommendation(
                 profile_id varchar(255),
                 rec1_product_id varchar(255),
@@ -354,7 +354,7 @@ def insert_into_profile_recommendation(cursor,linked_profiles):
         # Here we loop trough all the values and keys to make a query.
     for k,v in linked_profiles.items():
         
-        print(f"Key: {k} Values: {v}")
+        #print(f"Key: {k} Values: {v}")
         # print(v)
         if v == "None":
             v = ("None","None","None","None","None")
@@ -386,15 +386,19 @@ def content_filtering(cursor):
     """
     # First we get all the unique categories out of the table products
     All_categories = get_All_categories(cursor)
+    print('Got cats')
     
     # Next is to get 5 products if they exist in that category based on if they are on sale.
     five_Product_Category_Dict = get_Five_products_From_Category(cursor,All_categories)
+    print('Got 5 cats')
 
     # Next we make the table to inserts the values later on.
     make_Table_Category_Recommendation(cursor)
+    print('Made table')
     
     # Here we actually insert all the values in to the table created above
     insert_Into_Category_recommendation(cursor,five_Product_Category_Dict)
+    print('Inserted cats')
 
 def collaborative_filtering(cursor):
     """
@@ -409,18 +413,24 @@ def collaborative_filtering(cursor):
 
     # first we get all the recommended sub_categories for each unique user and store it in a variable to pass it on to a other function later on.
     recommended_sub_category_for_profile_ids = get_Most_Recommended_Sub_Category_For_User_id(cursor)
+    print('Got pref_sub_cat')
 
     # Here we get all the sub_categories that exists in the database and store it in a variable to pass it to a other function later on.
     sub_categories = get_all_subcategories(cursor)
+    print('Got all sub_cats')
 
     # Here we link all the categories to 5 product ids that can be recommended to a user later on.
     five_products_linked_to_sub_category = get_5Products_From_subcategory(cursor,sub_categories)
+    print('Got 5 sub_cats')
     
     # Here we link the  user_ids to there own 5 products depended on the sub_category they have seen the most.
     linked_profiles = link_Profile_Id_To_Products(five_products_linked_to_sub_category,recommended_sub_category_for_profile_ids)
+    print('Linked profiles')
 
     # Here we call a function to create the table for the profile recommendation in the database
     create_profile_recommendation_table(cursor)
+    print('Created table')
 
     # We insert everything in to the profiles
     insert_into_profile_recommendation(cursor,linked_profiles)
+    print('Inserted subcats')
