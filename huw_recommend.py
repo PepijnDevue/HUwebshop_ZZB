@@ -67,6 +67,12 @@ class Recom_product_page(Resource):
     product page based on target_group"""
 
     def get(self, product_id):
+        """
+        
+
+        Args:
+            product_id (_type_): _description_
+        """
         prod_ids = []
 
         tables = ['series_products', 'sscat_products', 'brand_products', 'category_products', 'group_products']
