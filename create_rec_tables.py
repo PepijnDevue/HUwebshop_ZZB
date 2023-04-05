@@ -38,22 +38,12 @@ def create_table_brand_products(cursor):
     cursor.execute('create table if not exists brand_products (brand varchar(255) primary key, product_ids varchar(1200))')
     cursor.execute("insert into brand_products (brand, product_ids) select brand, array_to_string(array(SELECT unnest(array_agg(_id)) LIMIT 5), ', ') as product_ids from product where brand is not null and recommendable is true group by brand having count(*) > 1 order by brand;")
 
-def create_table_age_products(cursor):
+def create_table_category_products(cursor):
     """
-    Create a table with all unique ages and the first 5 recommendable of that age
+    Create a table with all unique categories and the first 5 recommendable of that category
 
     Args:
         cursor (psycopg2 cursor): The postgreSQL cursor for the database
     """
-    cursor.execute('create table if not exists age_products (age varchar(255) primary key, product_ids varchar(1200))')
-    cursor.execute("insert into age_products (age, product_ids) select age, array_to_string(array(SELECT unnest(array_agg(_id)) LIMIT 5), ', ') as product_ids from product where age is not null and recommendable is true group by age having count(*) > 1 order by age;")
-
-def create_table_type_products(cursor):
-    """
-    Create a table with all unique types and the first 5 recommendable of that type
-
-    Args:
-        cursor (psycopg2 cursor): The postgreSQL cursor for the database
-    """
-    cursor.execute('create table if not exists type_products (product_type varchar(255) primary key, product_ids varchar(1200))')
-    cursor.execute("insert into type_products (product_type, product_ids) select product_type, array_to_string(array(SELECT unnest(array_agg(_id)) LIMIT 5), ', ') as product_ids from product where product_type is not null and recommendable is true group by product_type having count(*) > 1 order by product_type;")
+    cursor.execute('create table if not exists category_products (category varchar(255) primary key, product_ids varchar(1200))')
+    cursor.execute("insert into category_products (category, product_ids) select category, array_to_string(array(SELECT unnest(array_agg(_id)) LIMIT 5), ', ') as product_ids from product where category is not null and recommendable is true group by category having count(*) > 1 order by category;")
