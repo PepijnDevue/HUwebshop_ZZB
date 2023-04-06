@@ -114,7 +114,6 @@ class Recom_product_page(Resource):
                 prod_ids.extend(fetch_list)
 
         # return the first 4 products
-        print(prod_ids)
         return(prod_ids[:4], 200)
 
 # class Recom_subcategory(Resource):
