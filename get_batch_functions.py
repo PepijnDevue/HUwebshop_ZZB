@@ -17,7 +17,7 @@ def get_product_batch(batch_size, cursor):
     """
     # a list of keys wanted for the data transfer
     keys = ['_id',
-            'brand', 
+            'brand',
             'category', 
             'color', 
             'fast_mover', 
@@ -57,6 +57,11 @@ def get_product_batch(batch_size, cursor):
             else:
                 if key in record:
                     item_dict[key] = record[key]
+
+        # remember whether products are recommendable or not
+        if 'recommendable' in record:
+            item_dict['recommendable'] = record['recommendable']
+        else: item_dict['recommendable'] = False
         
         # only take products that have a name
         if 'name' in item_dict:
