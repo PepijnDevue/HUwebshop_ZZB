@@ -73,6 +73,26 @@ def get_All_categories(cursor):
 
     return category_values
 
+def get_All_sub_categories(cursor):
+    """
+    The function get_all_sub_categories() wil gather all the unique sub_categories from the table products.
+
+    Parameters:
+        Cursor: The cursor will be used to execute the query's
+    Return:
+        category_values: A list with all the unique categories
+    """
+
+    # Here we make the query that we will use in the cursor
+    query = f"SELECT DISTINCT sub_category FROM product WHERE sub_category IS not null"
+
+    # Here we use the cursor to execute
+    cursor.execute(query)
+
+    sub_category_values = [sub_category[0] for sub_category in cursor.fetchall()]
+
+    return sub_category_values
+
 def get_Five_products_From_Category(cursor,categories):
     """
     The Function get_Five_Products_From_Category() will get 5 products if possible from the database that are discounted.
@@ -114,6 +134,50 @@ def get_Five_products_From_Category(cursor,categories):
     # Returns the dictionary with the keys and the values that belongs to the key
     return category_Product_Values
 
+def get_Five_products_From_Sub_Category(cursor,sub_categories):
+    """
+    The Function get_Five_Products_From_Sub_Category() will get 5 products if possible from the database that are discounted.
+
+    Parameters:
+        cursor: The cursor will be used to execute the query's
+        sub_categories: The list of all unique categories
+    
+    Return
+        sub_category_Product_Values: a dictionary with a key 
+    
+    """
+
+    # here we create a empty dictionary
+    sub_category_Product_Values = {}
+
+    for sub_category in sub_categories:
+        if "'" in sub_category:
+            idx = sub_category.find("'")
+            sub_category = sub_category[:idx] + "'" + sub_category[idx:]
+
+        # Here we make a query and execute it
+        query = f"SELECT _id FROM product WHERE sub_category = '{sub_category}' AND discount = True AND recommendable = True LIMIT 5"
+        cursor.execute(query)
+
+        # fetches all the result the cursor have gotten from the query
+        result = cursor.fetchall()
+        
+        # Appends none to the result when the select does not return a total of 5 products to recommend.
+        for x in range(len(result),6):
+            result.append((None,))
+
+        # Here make a empty list to append the new tuples
+        product_id_list = []
+        for products in result:
+            for product in products:
+                product_id_list.append(product)
+
+        # here we append the tuple full of product ids connected to the key that is the sub_category
+        sub_category_Product_Values[sub_category] = tuple(product_id_list)
+            
+    # Returns the dictionary with the keys and the values that belongs to the key
+    return sub_category_Product_Values
+
 def make_Table_Category_Recommendation(cursor):
     """
     The function make_Table_Category_Recommendation() is used to create a table in the database called category_recommendation,
@@ -142,6 +206,33 @@ def make_Table_Category_Recommendation(cursor):
     # Here we use the cursor to execute the query.
     cursor.execute(query)
 
+def make_Table_Sub_Category_Recommendation(cursor):
+    """
+    The function make_Table_Sub_Category_Recommendation() is used to create a table in the database called sub_category_recommendation,
+    This table wil be filled with new data in the function insert_Into_Sub_Category_recommendation().
+
+    Parameters:
+        cursor: The cursor will be used to execute the query's 
+    Return:
+        None
+    """
+
+    # Here we write the query to create table
+    query = f"""
+            DROP TABLE IF EXISTS sub_category_recommendation;
+            CREATE TABLE IF NOT EXISTS sub_category_recommendation(
+                sub_category varchar(255),
+                rec1_product_id varchar(255),
+                rec2_product_id varchar(255),
+                rec3_product_id varchar(255),
+                rec4_product_id varchar(255),
+                rec5_product_id varchar(255),
+                PRIMARY KEY (sub_category));"""
+
+
+    # Here we use the cursor to execute the query.
+    cursor.execute(query)
+
 def insert_Into_Category_recommendation(cursor,category_product_values):
     """
     The function  insert_Into_Category_recommendation() wil insert the values into the category_recommendation table
@@ -161,6 +252,34 @@ def insert_Into_Category_recommendation(cursor,category_product_values):
         query = f"""
                 INSERT INTO category_recommendation (
                     category, 
+                    rec1_product_id, 
+                    rec2_product_id, 
+                    rec3_product_id, 
+                    rec4_product_id, 
+                    rec5_product_id) 
+                    VALUES ('{k}','{v[0]}','{v[1]}','{v[2]}','{v[3]}','{v[4]}')"""
+        
+        # Here we execute the query
+        cursor.execute(query)
+
+def insert_Into_Sub_Category_recommendation(cursor,sub_category_product_values):
+    """
+    The function insert_Into_Sub_Category_recommendation() wil insert the values into the sub_category_recommendation table
+    
+    Parameters:
+        cursor: The cursor will be used to execute the insert statements
+        sub_category_product_values: The rows to insert
+    return:
+        None:
+    """
+
+    # Here we loop trough all the values and keys to make a query.
+    for k,v in sub_category_product_values.items():
+
+        # Here we create the query that we wil use in the cursor execute
+        query = f"""
+                INSERT INTO sub_category_recommendation (
+                    sub_category, 
                     rec1_product_id, 
                     rec2_product_id, 
                     rec3_product_id, 
@@ -365,17 +484,15 @@ def insert_into_profile_recommendation(cursor,linked_profiles):
             # Here we execute the query
         cursor.execute(query)
 
-def content_filtering(cursor):
+def content_category_filtering(cursor):
     """
-    The function content_filtering() will run all the necessary functions to be create 1 table in the database with the use of content filtering.
+    The function content__category_filtering() will run all the necessary functions to be create 1 table in the database with the use of content filtering.
 
     
     Parameters:
         cursor: The cursor will be used to execute the query's 
-        connection: the connection is used to commit the executes the cursor has done
     return:
         None 
-    
     """
     # First we get all the unique categories out of the table products
     All_categories = get_All_categories(cursor)
@@ -399,7 +516,6 @@ def collaborative_filtering(cursor):
     
     Parameters:
         cursor: The cursor will be used to execute the query's 
-        connection: the connection is used to commit the executes the cursor has done
     return:
         None
     """
@@ -426,4 +542,30 @@ def collaborative_filtering(cursor):
 
     # We insert everything in to the profiles
     insert_into_profile_recommendation(cursor,linked_profiles)
-    print('Inserted subcats')
+    print('Inserted sub_cats')
+
+def content_sub_category_filtering(cursor):
+    """
+    The function content_sub_category_filtering() will run all the necessary functions to be create 1 table in the database with the use of content filtering.
+
+    
+    Parameters:
+        cursor: The cursor will be used to execute the query's 
+    return:
+        None   
+    """
+    # First we get all the unique categories out of the table products
+    All_sub_categories = get_All_sub_categories(cursor)
+    print('Got sub_cats')
+    
+    # Next is to get 5 products if they exist in that category based on if they are on sale.
+    five_Product_Sub_Category_Dict = get_Five_products_From_Sub_Category(cursor,All_sub_categories)
+    print('Got 5 sub_cats')
+
+    # Next we make the table to inserts the values later on.
+    make_Table_Sub_Category_Recommendation(cursor)
+    print('Made table')
+    
+    # Here we actually insert all the values in to the table created above
+    insert_Into_Sub_Category_recommendation(cursor,five_Product_Sub_Category_Dict)
+    print('Inserted sub_cats')

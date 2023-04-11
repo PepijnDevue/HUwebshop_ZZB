@@ -108,23 +108,96 @@ class Recom_product_page(Resource):
         # return the first 4 products
         return(prod_ids[:4], 200)
 
-# class Recom_subcategory(Resource):
-#     """This class represents the API that provides a recommendations for the
-#     shopping cart based on the profile"""
+class Recom_subcategory(Resource):
+    """This class represents the API that provides a recommendations for the
+    shopping cart based on the profile"""
+    encode_dict = {
+        'lichaamsverzorging':'Lichaamsverzorging',
+        'persoonlijke-hygiene':'Persoonlijke hygiene',
+        'mini-reisverpakkingen':'Mini reisverpakkingen',
+        'haarverzorging':'Haarverzorging',
+        'mondverzorging':'Mondverzorging',
+        'scheren-en-ontharen':'Scheren & ontharen',
+        'gezichtsverzorging-man':'Gezichtsverzorging man',
+        'gezichtsverzorging-vrouw':'Gezichstverzorging vrouw',
+        'optiek':'Optiek',
+        'wondverzorging':'Wondverzorging',
+        'seksualiteit':'Seksualiteit',
+        'vitaminen-en-supplementen':'Vitaminen en supplementen',
+        'geneesmiddelen':'Geneesmiddelen',
+        'afslanken':'Afslanken',
+        'voetverzorging':'Voetverzorging',
+        'sportvoeding':'Sportvoeding',
+        'zwangerschap':'Zwangerschap',
+        'haaraccessoires':'Haaraccessoires',
+        'gehoorbescherming':'Gehoorbescherming',
+        'toilet-en-keuken':'Toilet en keuken',
+        'wassen-en-schoonmaken':'Wassen en schoonmaken',
+        'overig-huishoudelijk':'Overig huishoudelijk',
+        'dierverzorging':'Dierverzorging',
+        'outdoor-en-vrij-tijd':'Outdoor en vrije tijd',
+        'woonaccessoires':'Woonaccessoires',
+        'feestartikelen':'Feestartikelen',
+        'seizoenen':'Seizoenen',
+        'tuinartikelen':'Tuinartikelen',
+        'boeken-en-tijdschriften':'Boeken & tijdschriften',
+        'kantoor-benodigdheden':'Kantoor benodigdheden',
+        'knutselen-en-hobby':'Knutselen en hobby',
+        'muziek':'Muziek',
+        'films':'Films',
+        'wonen':'Wonen',
+        'gamen':'Gamen',
+        'dames':'Dames',
+        'heren':'Heren',
+        'kleding-accessoires':'Kleding accessoires',
+        'babys-en-kinderen':"Baby's en kinderen",
+        'sieraden-en-bijoux':'Sieraden & bijoux',
+        'make-up-accessoires':'Make-up accessoires',
+        'geuren-en-geschenkset':'Geuren en geschenkset',
+        'make-up':'Make-up',
+        'luiers-en-verschonen':'Luiers en verschonen',
+        'babyverzorging':'Babyverzorging',
+        'baby-accessoires':'Baby accessoires',
+        'speelgoed':'Speelgoed',
+        'babyvoeding':'Babyvoeding',
+        'koude-dranken':'Koude dranken',
+        'snacks-en-snoep':'Snacks en snoep',
+        'koffie-en-thee':'Koffie en thee',
+        'elektonica-en-media':'Elektronica & media'
+    }
 
-#     def get(self, subcategory):
-#         """
-#         Get 4 products from postgre to recommend based on the
-#         profile id
+    def get(self, subcategory):
+        """
+        Get 4 products from postgre to recommend based on the
+        profile id
 
-#         Args:
-#             profile_id (str): The given product to base recommendation on profile id
+        Args:
+            profile_id (str): The given product to base recommendation on profile id
 
-#         Return: (Dave lees dit aub)
-#             Tuple with product id's and API response code
-#                 example: return(prod_ids, 200)
-#         """
-#         """*** IN TE VULLEN DOOR DAVE***"""
+        Return: (Dave lees dit aub)
+            Tuple with product id's and API response code
+                example: return(prod_ids, 200)
+        """
+        """*** IN TE VULLEN DOOR DAVE***"""
+        # Here we make the query
+        subcategory = self.encode_dict[subcategory]
+        query = """SELECT rec1_product_id,rec2_product_id,rec3_product_id,rec4_product_id 
+                   FROM sub_category_recommendation 
+                   WHERE sub_category = %s;
+                """
+        
+        # Here we fetch the result from the query
+        cursor.execute(query,(subcategory,))
+
+        # Here we fetch the result from the above cursor execute.
+        result = cursor.fetchall()
+
+        # Products ids are being put in a list instead of the tuple they come in when you use fetch
+        product_ids = [product_id for product_id in result[0]]
+
+        
+        # Returns the product_ids and a api response code inside a tuple
+        return(product_ids,200)
 
 class Recom_category(Resource):
     """This class represents the API that provides a recommendations for the
@@ -228,5 +301,5 @@ class Recom_shopping_cart(Resource):
 api.add_resource(Random_postgre, '/zzb/rand_pg')
 api.add_resource(Recom_product_page, '/zzb/product/<string:product_id>')
 api.add_resource(Recom_shopping_cart, '/zzb/winkelmand/<string:profile_id>')
-# api.add_resource(Recom_subcategory, '/zzb/subcategory/<string:subcategory>')
+api.add_resource(Recom_subcategory, '/zzb/subcategory/<string:subcategory>')
 api.add_resource(Recom_category, '/zzb/category/<string:category>')
