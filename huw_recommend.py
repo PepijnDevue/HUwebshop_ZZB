@@ -51,17 +51,21 @@ class Random_postgre(Resource):
         return prod_ids, 200
     
 class Recom_product_page(Resource):
-    """This class represents the API that provides a recommendations for the
-    product page based on target_group"""
+    """This class represents the API that provides recommendations for the
+    product page"""
 
     def get(self, product_id):
         """
-        get 4 recommendable products based on a given product id
+        Get 4 products from the PostgreSQL database to recommend based on the
+        product page using content filtering.
+        Look at the "Adviesrapport" for further explanation for this filter.
 
         Args:
-            product_id (str): The product on which the recommendation has to be based
-        Return:
-            A list of 4 product ids to recommend and status code OK
+            product_id (str): the product id to get recommendations for.
+
+        Returns:
+            Tuple with product id's and API response code
+                example: (['32522', '6910', '2537', '5844'], 200)
         """
         # list to return
         prod_ids = []
@@ -110,7 +114,7 @@ class Recom_product_page(Resource):
 
 class Recom_subcategory(Resource):
     """This class represents the API that provides a recommendations for the
-    shopping cart based on the profile"""
+    subcategory page based on the category"""
     encode_dict = {
         'lichaamsverzorging':'Lichaamsverzorging',
         'persoonlijke-hygiene':'Persoonlijke hygiene',
@@ -168,17 +172,17 @@ class Recom_subcategory(Resource):
 
     def get(self, subcategory):
         """
-        Get 4 products from postgre to recommend based on the
-        profile id
+        Get 4 products from the PostgreSQL database to recommend based on the
+        subcategory using content filtering.
+        Look at the "Adviesrapport" for further explanation for this filter.
 
         Args:
-            profile_id (str): The given product to base recommendation on profile id
+            subcategory (str): the subcategory name to get recommendations for.
 
-        Return: (Dave lees dit aub)
+        Returns:
             Tuple with product id's and API response code
-                example: return(prod_ids, 200)
+                example: (['32522', '6910', '2537', '5844'], 200)
         """
-        """*** IN TE VULLEN DOOR DAVE***"""
         # Here we make the query
         subcategory = self.encode_dict[subcategory]
         query = """SELECT rec1_product_id,rec2_product_id,rec3_product_id,rec4_product_id 
@@ -201,7 +205,7 @@ class Recom_subcategory(Resource):
 
 class Recom_category(Resource):
     """This class represents the API that provides a recommendations for the
-    shopping cart based on the profile"""
+    category page based on the category"""
     encode_dict = {
         'gezond-en-verzorging':"Gezond & verzorging",
         'huishouden':"Huishouden",
@@ -223,17 +227,17 @@ class Recom_category(Resource):
 
     def get(self, category):
         """
-        Get 4 products from postgre to recommend based on the
-        profile id
+        Get 4 products from the PostgreSQL database to recommend based on the
+        category using content filtering.
+        Look at the "Adviesrapport" for further explanation for this filter.
 
         Args:
-            profile_id (str): The given product to base recommendation on profile id
+            category (str): the category name to get recommendations for.
 
-        Return: (Dave lees dit aub)
+        Returns:
             Tuple with product id's and API response code
-                example: return(prod_ids, 200)
+                example: (['32522', '6910', '2537', '5844'], 200)
         """
-        """*** IN TE VULLEN DOOR DAVE***"""
 
         # Here we make the query
         category = self.encode_dict[category]
@@ -261,15 +265,16 @@ class Recom_shopping_cart(Resource):
 
     def get(self, profile_id):
         """
-        Get 4 products from postgre to recommend based on the
-        profile id
+        Get 4 products from the PostgreSQL database to recommend based on the
+        profile id using collaborative filtering.
+        Look at the "Adviesrapport" for further explanation for this filter.
 
         Args:
-            subcategory (str): The given profile_id to base recommendation on profile_id
+            profile_id (str): the profile id to get recommendations for
 
-        Return: (Dave lees dit aub)
+        Returns:
             Tuple with product id's and API response code
-                example: return(prod_ids, 200)
+                example: (['32522', '6910', '2537', '5844'], 200)
         """
         # Query that gets 4 product_ids from the data base out of the table profile_recommendation based on the profile_id
         query = """SELECT rec1_product_id,rec2_product_id,rec3_product_id,rec4_product_id 

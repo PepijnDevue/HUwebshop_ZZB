@@ -247,7 +247,16 @@ class HUWebshop(object):
             return resultlist
         return []
     
-    def product_recommend(self, product_id):
+    def product_page_recommend(self, product_id):
+        """
+        Uses the content filter for the product page (see huw_recommend.py Recom_product_page function) by using an API request.
+
+        Args:
+            product_id (str): The ID of the product to get recommendations for.
+
+        Returns:
+            A list of four products to be recommended or an empty list if the API request failed.
+        """
         # get the product_id's via an API call
         resp = requests.get(self.recseraddress+'/zzb/product/'+product_id)
         # if the status code is OK
@@ -263,6 +272,15 @@ class HUWebshop(object):
         return []
 
     def shoppingcart_recommend(self, profile_id):
+        """
+        Uses the collaborative filter for the shopping cart page (see huw_recommend.py Recom_shopping_cart function) by using an API request.
+
+        Args:
+            profile_id (str): The ID of the profile to get recommendations for.
+
+        Returns:
+            A list of four products to be recommended or an empty list if the API request failed.
+        """
         # get the profile_id's via an API call
         resp = requests.get(self.recseraddress + '/zzb/winkelmand/' + profile_id)
         # if the status code is OK
@@ -278,6 +296,15 @@ class HUWebshop(object):
         return []
 
     def subcategory_recommend(self, subcategory):
+        """
+        Uses the content filter for the subcategory page (see huw_recommend.py Recom_subcategory function) by using an API request.
+
+        Args:
+            subcategory (str): The name of the category to get recommendations for.
+
+        Returns:
+            A list of four products to be recommended or an empty list if the API request failed.
+        """
         # get the product_id's via an API call
         resp = requests.get(self.recseraddress+'/zzb/subcategory/' + subcategory)
         # if the status code is OK
@@ -293,6 +320,15 @@ class HUWebshop(object):
         return []
 
     def category_recommend(self, category):
+        """
+        Uses the content filter for the category page (see huw_recommend.py Recom_category function) by using an API request.
+
+        Args:
+            category (str): The name of the category to get recommendations for.
+
+        Returns:
+            A list of four products to be recommended or an empty list if the API request failed.
+        """
         # get the product_id's via an API call
         resp = requests.get(self.recseraddress+'/zzb/category/' + category)
         # if the status code is OK
@@ -373,7 +409,7 @@ class HUWebshop(object):
         product = self.database.products.find_one({"_id":str(productid)})
         return self.renderpackettemplate('productdetail.html', {'product':product,\
             'prepproduct':self.prepproduct(product),\
-            'r_products':self.product_recommend(str(productid)), \
+            'r_products':self.product_page_recommend(str(productid)), \
             'r_type':list(self.recommendationtypes.keys())[1],\
             'r_string':list(self.recommendationtypes.values())[1]})
 
