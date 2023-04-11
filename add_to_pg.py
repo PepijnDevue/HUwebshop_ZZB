@@ -1,5 +1,5 @@
 # imports
-import create_functions
+import create_rec_tables
 import postgre_functions
 
 # only run the following if this script is directly ran
@@ -7,17 +7,18 @@ if __name__ == '__main__':
     # Connect to postgreDB
     cursor, connection = postgre_functions.open_postgre()
 
-    # create and fill table most_recommended
-    create_functions.create_table_most_recommended(cursor)
-
-    # create and fill row top_category in table user_profile
-    # create_functions.create_row_top_category(cursor)
-
-    # create and fill table top_category_product
-    # create_functions.create_table_top_category_product(cursor)
-
-    # create and fill table top_group_product
-    create_functions.create_table_top_group_product(cursor)
+    create_rec_tables.create_table_brand_products(cursor)
+    create_rec_tables.create_table_group_products(cursor)
+    create_rec_tables.create_table_series_products(cursor)
+    create_rec_tables.create_table_sscat_products(cursor)
+    create_rec_tables.create_table_category_products(cursor)
+    print('Done with content filter Pepijn')
+    create_rec_tables.content_category_filtering(cursor)
+    print('Done with content filter category Dave')
+    create_rec_tables.content_sub_category_filtering(cursor)
+    print('Done with content sub_category filter Dave')
+    create_rec_tables.collaborative_filtering(cursor)
+    print('Done with collaborative filter Dave')
 
     # save changes and close postgre connection safely
     postgre_functions.close_postgre(cursor, connection)

@@ -59,7 +59,8 @@ def products_to_postgre(cursor, products):
                     'product_type',
                     'sub_category',
                     'sub_sub_category',
-                    'sub_sub_sub_category']
+                    'sub_sub_sub_category',
+                    'recommendable']
 
     # Loops trough all the products.
     for product in products:
@@ -78,7 +79,7 @@ def products_to_postgre(cursor, products):
         # Add a tuple version of the row_information to a list to later use for execute_batch
         product_batch_values.append((product_row))
     
-    execute_batch(cursor,"INSERT INTO product (_id, brand, category, colour, fast_mover, gender, product_name, price, discount, target_group, size, age, series, product_type, sub_category, sub_sub_category, sub_sub_sub_category) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", product_batch_values)
+    execute_batch(cursor,"INSERT INTO product (_id, brand, category, colour, fast_mover, gender, product_name, price, discount, target_group, size, age, series, product_type, sub_category, sub_sub_category, sub_sub_sub_category, recommendable) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", product_batch_values)
 
 def profiles_to_postgre(cursor, profiles):
     """

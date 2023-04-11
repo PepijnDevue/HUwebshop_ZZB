@@ -10,12 +10,6 @@ if __name__ == "__main__":
     # Connect to postgreDB
     postgre_cursor, postgre_connection = postgre_functions.open_postgre()
 
-    # Calculate average price
-    # handle_2c_2(mongo_db)
-
-    # Find product which price deviates most from random given product
-    # handle_2c_3(mongo_db)
-
     # Transfer products
     handle_functions.handle_products(mongo_db, postgre_cursor)
     print("Product data is transferred")

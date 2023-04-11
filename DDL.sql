@@ -17,7 +17,8 @@ create table product(
     product_type varchar(255),
     sub_category varchar(255),
     sub_sub_category varchar(255),
-    sub_sub_sub_category varchar(255)
+    sub_sub_sub_category varchar(255),
+    recommendable boolean NOT NULL
 );
 
 create table user_profile(

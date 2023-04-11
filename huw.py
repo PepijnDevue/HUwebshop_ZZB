@@ -1,8 +1,9 @@
-from flask import Flask, request, session, render_template, redirect, url_for, g
-import random, os, json, urllib.parse, requests
+from flask import Flask, request, session, render_template
+import os, urllib.parse, requests
 from pymongo import MongoClient
 from dotenv import load_dotenv
 from bson.objectid import ObjectId
+
 
 # The secret key used for session encryption is randomly generated every time
 # the server is started up. This means all session data (including the 
@@ -221,7 +222,7 @@ class HUWebshop(object):
         return render_template(template, packet=packet)
 
     """ ..:: Recommendation Functions ::.. """ 
-    def random_from_pg(self):
+    def random_products(self):
         """
         Send a request to huw_recommend.py for 4 random product_id's from postgre
         Get necessary product info from mongoDB and return that to be recommended
@@ -340,16 +341,16 @@ class HUWebshop(object):
         querycursor.skip(skipindex)
         querycursor.limit(session['items_per_page'])
         prodlist = list(map(self.prepproduct, list(querycursor)))
-        rec_result = []
         # If a subcategory is selected/viewed
         if cat2 is not None:
-            self.subcategory_recommend(cat2)
+            rec_result = self.subcategory_recommend(cat2)
         # If a category is selected/viewed
         elif cat1 is not None:
-            self.category_recommend(cat1)
+            rec_result = self.category_recommend(cat1)
         # If no category is selected/viewed
-        else:
-            self.shoppingcart_recommend(session['profile_id'])
+        elif cat1 == None:
+            rec_result = self.shoppingcart_recommend(session['profile_id'])
+
         if len(nononescats) > 1:
             pagepath = "/producten/"+("/".join(nononescats))+"/"
         else:
