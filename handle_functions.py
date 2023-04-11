@@ -1,40 +1,8 @@
 # imports
-import random
 import postgre_functions
 import mongo_functions
-import price_functions
 import fit_data_functions
 import get_batch_functions
-
-def handle_2c_2(mongo_db):
-    """
-    Calculates the average price of all products in the MongoDB database.
-
-    Args:
-        mongo_db: The MongoDB object to use for the database.
-
-    Returns:
-        None
-    """
-    products = mongo_functions.collect_product_data(mongo_db)
-    price_avg = price_functions.get_avg_price(products)
-    print(f"The average price of the products is {price_avg} euros")
-
-def handle_2c_3(mongo_db):
-    """
-    Choose a random product, retrieve its price, and find the product that deviates the most from it.
-
-    Args:
-        mongo_db: The MongoDB object to use for the database.
-
-    Returns:
-        None
-    """
-    products = mongo_functions.collect_product_data(mongo_db)
-    random_product = random.choice(products)
-    max_deviated_product = price_functions.find_max_price_deviation_product(random_product, products)
-    print(f"The product which price deviates the most from the product {random_product['name']} with the price {round(int(random_product['selling_price'])/100, 2)} is {max_deviated_product['name']} with a price of {round(int(max_deviated_product['selling_price'])/100, 2)} euros")
-    
 
 def handle_products(mongo_db, postgre_cursor):
     """

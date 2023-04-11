@@ -31,18 +31,6 @@ password = password_file.readline()
 db_name = 'huwebshop'
 connection = psycopg2.connect(f'dbname={db_name} user=postgres password={password}')
 cursor = connection.cursor()
-
-class Recom_mongo(Resource):
-    """ This class represents the REST API that provides the recommendations for
-    the web shop. At the moment, the API simply returns a random set of products taken
-    out of mongoDB to recommend."""
-
-    def get(self, profile_id, count):
-        """ This function represents the handler for GET requests coming in
-        through the API. It currently returns a random sample of products. """
-        rand_cursor = database.products.aggregate([{ '$sample': { 'size': count } }])
-        prod_ids = list(map(lambda x: x['_id'], list(rand_cursor)))
-        return prod_ids, 200
     
 class Random_postgre(Resource):
     """This class represents the API that provides random recommendations from
@@ -114,7 +102,6 @@ class Recom_product_page(Resource):
                 prod_ids.extend(fetch_list)
 
         # return the first 4 products
-        print(prod_ids)
         return(prod_ids[:4], 200)
 
 # class Recom_subcategory(Resource):
@@ -207,7 +194,6 @@ class Recom_shopping_cart(Resource):
             Tuple with product id's and API response code
                 example: return(prod_ids, 200)
         """
-        """*** IN TE VULLEN DOOR DAVE***"""
         # Query that gets 4 product_ids from the data base out of the table profile_recommendation based on the profile_id
         query = """SELECT rec1_product_id,rec2_product_id,rec3_product_id,rec4_product_id 
                     FROM profile_recommendation 
@@ -233,11 +219,6 @@ class Recom_shopping_cart(Resource):
         
         # Returns the product_ids and a api response code inside a tuple
         return(product_ids,200)
-
-
-# This method binds the Recom class to the REST API, to parse specifically
-# requests in the format described below.
-api.add_resource(Recom_mongo, "/<string:profile_id>/<int:count>")
 
 # resources added by ZZB
 api.add_resource(Random_postgre, '/zzb/rand_pg')

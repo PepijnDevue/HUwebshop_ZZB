@@ -106,7 +106,6 @@ def get_Five_products_From_Category(cursor,categories):
         product_id_list = []
         for products in result:
             for product in products:
-                # print(product)
                 product_id_list.append(product)
 
         # here we append the tuple full of product ids connected to the key that is the category
@@ -251,7 +250,6 @@ def get_5Products_From_subcategory(cursor, sub_categories):
 
         # Here we make the query
         query = f"SELECT _id FROM product WHERE recommendable = True AND sub_category = '{sub_category}' LIMIT 5"
-        # print(query)
         cursor.execute(query,sub_category)
 
         # fetches all the result the cursor have gotten from the query
@@ -265,7 +263,6 @@ def get_5Products_From_subcategory(cursor, sub_categories):
         product_id_list = []
         for products in result:
             for product in products:
-                # print(product)
                 product_id_list.append(product)
 
         # here we append the tuple full of product ids connected to the key that is the category
@@ -292,10 +289,8 @@ def link_Profile_Id_To_Products(sub_category_product_values,most_recommended_sub
     # Make a empty dictionary where we wil add all the new values.
     Linked_Profiles = {}
 
-    # print(most_recommended_subcategory_profileid)
     # Loops trough all the profile information and then just looks add the key in the most_recommended_sub_category_profileid and just appends the value found there.
     for profile_info in most_recommended_subcategory_profileid:
-        # print(profile_info)
 
         if profile_info[1] == None:
             # checks if the category is None for a user if so we append a string
@@ -354,8 +349,6 @@ def insert_into_profile_recommendation(cursor,linked_profiles):
         # Here we loop trough all the values and keys to make a query.
     for k,v in linked_profiles.items():
         
-        #print(f"Key: {k} Values: {v}")
-        # print(v)
         if v == "None":
             v = ("None","None","None","None","None")
 

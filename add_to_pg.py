@@ -16,7 +16,7 @@ if __name__ == '__main__':
     create_rec_tables.content_filtering(cursor)
     print('Done with content filter Dave')
     create_rec_tables.collaborative_filtering(cursor)
-    print('Done with collab filter Dave')
+    print('Done with collaborative filter Dave')
 
     # save changes and close postgre connection safely
     postgre_functions.close_postgre(cursor, connection)
