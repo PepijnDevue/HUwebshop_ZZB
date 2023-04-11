@@ -13,10 +13,12 @@ if __name__ == '__main__':
     create_rec_tables.create_table_sscat_products(cursor)
     create_rec_tables.create_table_category_products(cursor)
     print('Done with content filter Pepijn')
-    create_rec_tables.content_filtering(cursor)
-    print('Done with content filter Dave')
+    create_rec_tables.content_category_filtering(cursor)
+    print('Done with content filter category Dave')
+    create_rec_tables.content_sub_category_filtering(cursor)
+    print('Done with content sub_category filter Dave')
     create_rec_tables.collaborative_filtering(cursor)
-    print('Done with collab filter Dave')
+    print('Done with collaborative filter Dave')
 
     # save changes and close postgre connection safely
     postgre_functions.close_postgre(cursor, connection)
