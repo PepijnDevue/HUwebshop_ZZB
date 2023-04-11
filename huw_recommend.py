@@ -88,6 +88,8 @@ class Recom_product_page(Resource):
                 if product_id in fetch_list:
                     fetch_list.remove(product_id)
                 prod_ids.extend(fetch_list)
+                # remove duplicates
+                prod_ids = list(dict.fromkeys(prod_ids))
             # look for the next trait
             table_index += 1
             # if all traits are None, get products that are generally recommendable
@@ -100,6 +102,8 @@ class Recom_product_page(Resource):
                 if product_id in fetch_list:
                     fetch_list.remove(product_id)
                 prod_ids.extend(fetch_list)
+                # remove duplicates
+                prod_ids = list(dict.fromkeys(prod_ids))
 
         # return the first 4 products
         return(prod_ids[:4], 200)
