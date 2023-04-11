@@ -259,7 +259,7 @@ class Recom_category(Resource):
         # Returns the product_ids and a api response code inside a tuple
         return(product_ids,200)
 
-class Recom_shopping_cart(Resource):
+class Recom_shopping_cart_collab(Resource):
     """This class represents the API that provides a recommendations for the
     shopping cart based on the profile"""
 
@@ -301,10 +301,53 @@ class Recom_shopping_cart(Resource):
         
         # Returns the product_ids and a api response code inside a tuple
         return(product_ids,200)
+    
+class Recom_shopping_cart_content(Resource):
+    """This class represents the API that provides a recommendations for the
+    shopping cart based on the products"""
+
+    def get(self, prods_str):
+        """
+        Get 4 products to recommend based on the most frequent sub_sub_category in a shopping cart
+
+        Args:
+            prods_str (str): A parsed list of product_ids that are in the shopping cart
+
+        Returns:
+            list: A list of 4 product_ids to recommend
+        """
+        # Un-parse the products
+        prod_list = prods_str.split('.')
+
+        # get the sub_sub_category that is most frequently occuring in the shopping cart
+        query_str = str(prod_list).replace('[', '').replace(']', '')
+        cursor.execute(f'select sub_sub_category from product where _id in ({query_str}) group by sub_sub_category order by count(*) desc limit 1;')
+        sub_sub_cat = cursor.fetchall()[0][0]
+
+        # get recommendable products based on the sub_sub_category
+        cursor.execute('select product_ids from sscat_products where sub_sub_category = %s', (sub_sub_cat, ))
+        sub_sub_cat_recs = cursor.fetchall()[0][0].split(', ')
+
+        # only recommend new products
+        return_list = []
+        for product in sub_sub_cat_recs:
+            if product not in prod_list:
+                return_list.append(product)
+
+        # if not enough products found, also recommend some other generally popular products
+        if len(prod_list) < 4:
+            cursor.execute(f'select product_id from prev_recommended join product on prev_recommended.product_id = product._id where product.recommendable = True group by product_id order by count(*) desc limit {4 + len(prod_list) + len(return_list)};')
+            general_recs = [i[0] for i in cursor.fetchall()]
+            for product in general_recs:
+                if product not in prod_list and product not in return_list:
+                    return_list.append(product)
+        return return_list[:4]
+
 
 # resources added by ZZB
 api.add_resource(Random_postgre, '/zzb/rand_pg')
 api.add_resource(Recom_product_page, '/zzb/product/<string:product_id>')
-api.add_resource(Recom_shopping_cart, '/zzb/winkelmand/<string:profile_id>')
+api.add_resource(Recom_shopping_cart_collab, '/zzb/winkelmand/collab/<string:profile_id>')
 api.add_resource(Recom_subcategory, '/zzb/subcategory/<string:subcategory>')
 api.add_resource(Recom_category, '/zzb/category/<string:category>')
+api.add_resource(Recom_shopping_cart_content, '/zzb/winkelmand/content/<string:prods_str>')
