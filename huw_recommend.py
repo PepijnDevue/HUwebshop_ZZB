@@ -255,7 +255,7 @@ class Recom_category(Resource):
         # Returns the product_ids and a api response code inside a tuple
         return(product_ids,200)
 
-class Recom_shopping_cart(Resource):
+class Recom_shopping_cart_collab(Resource):
     """This class represents the API that provides a recommendations for the
     shopping cart based on the profile"""
 
@@ -296,10 +296,20 @@ class Recom_shopping_cart(Resource):
         
         # Returns the product_ids and a api response code inside a tuple
         return(product_ids,200)
+    
+class Recom_shopping_cart_content(Resource):
+    """This class represents the API that provides a recommendations for the
+    shopping cart based on the products"""
+
+    def get(prod_list):
+        print(prod_list)
+        return None
+
 
 # resources added by ZZB
 api.add_resource(Random_postgre, '/zzb/rand_pg')
 api.add_resource(Recom_product_page, '/zzb/product/<string:product_id>')
-api.add_resource(Recom_shopping_cart, '/zzb/winkelmand/<string:profile_id>')
+api.add_resource(Recom_shopping_cart_collab, '/zzb/winkelmand/collab/<string:profile_id>')
 api.add_resource(Recom_subcategory, '/zzb/subcategory/<string:subcategory>')
 api.add_resource(Recom_category, '/zzb/category/<string:category>')
+api.add_resource(Recom_shopping_cart_content, '/zzb/winkelmand/content/<string:prod_list>')

@@ -262,9 +262,36 @@ class HUWebshop(object):
             return resultlist
         return []
 
-    def shoppingcart_recommend(self, profile_id):
-        # get the profile_id's via an API call
-        resp = requests.get(self.recseraddress + '/zzb/winkelmand/' + profile_id)
+    def shoppingcart_collab_recommend(self, profile_id):
+        # get the product_id's via an API call
+        resp = requests.get(self.recseraddress + '/zzb/winkelmand/collab/' + profile_id)
+        # if the status code is OK
+        if resp.status_code == 200:
+            # get the decoded list of product_id's
+            recs = eval(resp.content.decode())
+            queryfilter = {"_id": {"$in": recs}}
+            # get the necessary info from mondoDB
+            querycursor = self.database.products.find(queryfilter, self.productfields)
+            resultlist = list(map(self.prepproduct, list(querycursor)))
+            # return as list of dicts
+            return resultlist
+        return []
+    
+    def shoppingcart_content_recommend(self, prod_dicts):
+        """
+        Get 4 recommendable products based on a couple of products in the shoppingcart
+
+        Args:
+            prod_dicts (list): A list of dictionaries with information about the products
+
+        Returns:
+            list: A list of dicts containing information about the 4 recommended products
+        """
+        prod_list = [i['id'] for i in prod_dicts]
+        prod_str = '*'.join(prod_list)
+        print(prod_str)
+        # get the product_id's via an API call
+        resp = requests.get(self.recseraddress + '/zzb/winkelmand/content/' + prod_str)
         # if the status code is OK
         if resp.status_code == 200:
             # get the decoded list of product_id's
@@ -384,8 +411,12 @@ class HUWebshop(object):
             product = self.prepproduct(self.database.products.find_one({"_id":str(tup[0])}))
             product["itemcount"] = tup[1]
             i.append(product)
+        if len(i) == 0:
+            rec_result = self.shoppingcart_collab_recommend(str(session['profile_id']))
+        else:
+            rec_result = self.shoppingcart_content_recommend(i)
         return self.renderpackettemplate('shoppingcart.html',{'itemsincart':i,\
-            'r_products':self.shoppingcart_recommend(str(session['profile_id'])), \
+            'r_products':rec_result, \
             'r_type':list(self.recommendationtypes.keys())[2],\
             'r_string':list(self.recommendationtypes.values())[2]})
 
