@@ -288,9 +288,10 @@ class HUWebshop(object):
             list: A list of dicts containing information about the 4 recommended products
         """
         prod_list = [i['id'] for i in prod_dicts]
-        prod_str = '*'.join(prod_list)
-        print(prod_str)
+        prod_str = '.'.join(prod_list)
+        print(prod_str, type(prod_str))
         # get the product_id's via an API call
+        print(self.recseraddress + '/zzb/winkelmand/content/' + prod_str)
         resp = requests.get(self.recseraddress + '/zzb/winkelmand/content/' + prod_str)
         # if the status code is OK
         if resp.status_code == 200:

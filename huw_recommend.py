@@ -301,9 +301,23 @@ class Recom_shopping_cart_content(Resource):
     """This class represents the API that provides a recommendations for the
     shopping cart based on the products"""
 
-    def get(prod_list):
+    def get(self, prods_str):
+        print(prods_str)
+        prod_list = prods_str.split('.')
         print(prod_list)
-        return None
+        query_str = str(prod_list).replace('[', '').replace(']', '')
+        return_list = []
+        cursor.execute(f'select sub_sub_category from product where _id in ({query_str}) group by sub_sub_category order by count(*) desc limit 1;')
+        sub_sub_cat = cursor.fetchall()[0][0]
+        cursor.execute('select product_ids from sscat_products where sub_sub_category = %s', (sub_sub_cat, ))
+        sub_sub_cat_recs = cursor.fetchall()[0][0].split(', ')
+        for product in sub_sub_cat_recs:
+            if product not in prod_list:
+                return_list.append(product)
+        if len(prod_list) < 4:
+            cursor.execute(f'select product_id from prev_recommended join product on prev_recommended.product_id = product._id where product.recommendable = True group by product_id order by count(*) desc limit {4 + len(prod_list) + len(return_list)};')
+            print(cursor.fetchall())
+        return return_list[:4]
 
 
 # resources added by ZZB
@@ -312,4 +326,4 @@ api.add_resource(Recom_product_page, '/zzb/product/<string:product_id>')
 api.add_resource(Recom_shopping_cart_collab, '/zzb/winkelmand/collab/<string:profile_id>')
 api.add_resource(Recom_subcategory, '/zzb/subcategory/<string:subcategory>')
 api.add_resource(Recom_category, '/zzb/category/<string:category>')
-api.add_resource(Recom_shopping_cart_content, '/zzb/winkelmand/content/<string:prod_list>')
+api.add_resource(Recom_shopping_cart_content, '/zzb/winkelmand/content/<string:prods_str>')
