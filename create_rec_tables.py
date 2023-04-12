@@ -230,7 +230,7 @@ def get_all_subcategories(cursor):
             # Replaces the string
             get_all_sub_categories[i] = 'Baby''s en kinderen'
 
-    return get_all_sub_categories`
+    return get_all_sub_categories
 
 def get_two_users_for_every_SubCategory(cursor, sub_categorys):
     """
@@ -266,6 +266,24 @@ def get_two_users_for_every_SubCategory(cursor, sub_categorys):
         subCategory_Users[subCategory] = cursor.fetchall()
 
     return subCategory_Users
+
+
+
+def create_top_subCategory_Users_Table(cursor,connection):
+
+
+    query = f"""DROP TABLE IF EXISTS top_subCategory_users;
+            CREATE TABLE top_subCategory_users(
+                sub_category varchar(255),
+                rec1_profile_id varchar(255),
+                rec2_profile_id varchar(255),
+                PRIMARY KEY (sub_category));"""
+
+
+    # Execute the query
+    cursor.execute(query)
+    # Commit the cursor query
+    connection.commit()
 
 def get_5Products_From_subcategory(cursor, sub_categories):
     """
