@@ -350,6 +350,7 @@ def get_all_subcategories(cursor):
 
     return get_all_sub_categories
 
+
 def get_5Products_From_subcategory(cursor, sub_categories):
     """
     The function get_5Products_From_Subcategory() Gets 5 products or less for each sub category and appends them in a dictionary
@@ -484,6 +485,86 @@ def insert_into_profile_recommendation(cursor,linked_profiles):
             # Here we execute the query
         cursor.execute(query)
 
+def get_two_users_for_every_SubCategory(cursor,sub_categorys):
+    """
+    This function will get 2 users for every category this way we dont have to query alot since it already takes along time.
+    We wil use this collection of users connect to category 
+    
+    Parameters:
+        cursor: The cursor that is connected to the database used for querys
+        sub_categorys: A list full of sub_categorys.
+    return:
+        users_subCategory: a dict with the subCategory as key and the 2 profile ids as values linked to that sub_category 
+
+    """
+
+    subCategory_Users = {}
+
+    for subCategory in sub_categorys:
+        print(subCategory)
+        query = f"""SELECT temp.user_profile_id
+                    FROM (
+                        SELECT prev_recommended.user_profile_id, product.sub_category, COUNT(*) as total_recommendations,
+                        ROW_NUMBER() OVER (PARTITION BY prev_recommended.user_profile_id ORDER BY COUNT(*) DESC) as rn
+                        FROM prev_recommended
+                        INNER JOIN product ON prev_recommended.product_id = product._id
+                        GROUP BY prev_recommended.user_profile_id, product.sub_category
+                    ) AS temp
+                    WHERE temp.rn = 1 and temp.sub_category = '{subCategory}'
+				    ORDER BY temp.total_recommendations DESC LIMIT 2;
+                """
+        
+        cursor.execute(query)
+
+        subCategory_Users[subCategory] = cursor.fetchall()
+
+    return subCategory_Users
+
+
+
+def create_top_subCategory_Users_Table(cursor):
+    """
+    This function wil create a table for the 2 users per sub_category.
+
+    Parameters:
+        cursor: The cursor will be used to execute the query's 
+        Connection: the connection is used to commit the executes the cursor has done
+    return:
+        None
+    """
+
+    query = f"""DROP TABLE IF EXISTS top_subCategory_users;
+            CREATE TABLE top_subCategory_users(
+                sub_category varchar(255),
+                rec1_profile_id varchar(255),
+                rec2_profile_id varchar(255),
+                PRIMARY KEY (sub_category));"""
+
+
+    # Execute the query
+    cursor.execute(query)
+
+def insert_top_subCategory_Users_Table(cursor,DictOfsubcategoryUsers):
+
+    for k,v in DictOfsubcategoryUsers.items():
+        
+        print(f"Key: {k} Values: {v}")
+        # print(v)
+        if len(v) == 0:
+            v = [(None,),(None,)]
+        elif len(v) == 1:
+            v.append((None,))
+
+        query = f"""INSERT INTO top_subCategory_users (
+                    sub_category, 
+                    rec1_profile_id, 
+                    rec2_profile_id ) 
+                    VALUES ('{k}','{v[0][0]}','{v[1][0]}')"""
+            
+            # Here we execute the query
+        cursor.execute(query)
+        
+
 def content_category_filtering(cursor):
     """
     The function content__category_filtering() will run all the necessary functions to be create 1 table in the database with the use of content filtering.
@@ -544,6 +625,18 @@ def collaborative_filtering(cursor):
     insert_into_profile_recommendation(cursor,linked_profiles)
     print('Inserted sub_cats')
 
+        # Here we get 2 users for each sub category to use for comparing.
+    twoUsers_For_each_subCategory = get_two_users_for_every_SubCategory(cursor,sub_categories)
+    print("2 users for every subCategory collected")
+
+    # Here we create the table to insert all the sub categorys with their 2 user ids
+    create_top_subCategory_Users_Table(cursor)
+    print("Table Top subcategory users made")
+
+    # Here we insert the actual information in to the table.
+    insert_top_subCategory_Users_Table(cursor,twoUsers_For_each_subCategory)
+    print("Top sub category users inserted")
+
 def content_sub_category_filtering(cursor):
     """
     The function content_sub_category_filtering() will run all the necessary functions to be create 1 table in the database with the use of content filtering.
@@ -569,3 +662,6 @@ def content_sub_category_filtering(cursor):
     # Here we actually insert all the values in to the table created above
     insert_Into_Sub_Category_recommendation(cursor,five_Product_Sub_Category_Dict)
     print('Inserted sub_cats')
+
+
+
