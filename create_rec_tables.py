@@ -516,4 +516,15 @@ def collaborative_filtering(cursor):
     insert_into_profile_recommendation(cursor,linked_profiles)
     print('Inserted subcats')
 
+    # Here we get 2 users for each sub category to use for comparing.
     twoUsers_For_each_subCategory = get_two_users_for_every_SubCategory(cursor)
+    print("2 users for every subCategory collected")
+
+    # Here we create the table to insert all the sub categorys with their 2 user ids
+    create_top_subCategory_Users_Table(cursor)
+    print("Table Top subcategory users made")
+
+    # Here we insert the actual information in to the table.
+    insert_top_subCategory_Users_Table(cursor,twoUsers_For_each_subCategory)
+    print("Top sub category users inserted")
+
