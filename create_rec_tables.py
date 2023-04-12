@@ -230,7 +230,42 @@ def get_all_subcategories(cursor):
             # Replaces the string
             get_all_sub_categories[i] = 'Baby''s en kinderen'
 
-    return get_all_sub_categories
+    return get_all_sub_categories`
+
+def get_two_users_for_every_SubCategory(cursor, sub_categorys):
+    """
+    This function will get 2 users for every category this way we dont have to query alot since it already takes along time.
+    We wil use this collection of users connect to category 
+    
+    Parameters:
+        cursor: The cursor that is connected to the database used for querys
+        sub_categorys: A list full of sub_categorys.
+    return:
+        users_subCategory: a dict with the subCategory as key and the 2 profile ids as values linked to that sub_category 
+
+    """
+
+    subCategory_Users = {}
+
+    for subCategory in sub_categorys:
+        print(subCategory)
+        query = f"""SELECT temp.user_profile_id
+                    FROM (
+                        SELECT prev_recommended.user_profile_id, product.sub_category, COUNT(*) as total_recommendations,
+                        ROW_NUMBER() OVER (PARTITION BY prev_recommended.user_profile_id ORDER BY COUNT(*) DESC) as rn
+                        FROM prev_recommended
+                        INNER JOIN product ON prev_recommended.product_id = product._id
+                        GROUP BY prev_recommended.user_profile_id, product.sub_category
+                    ) AS temp
+                    WHERE temp.rn = 1 and temp.sub_category = '{subCategory}'
+				    ORDER BY temp.total_recommendations DESC LIMIT 2;
+                """
+        
+        cursor.execute(query)
+
+        subCategory_Users[subCategory] = cursor.fetchall()
+
+    return subCategory_Users
 
 def get_5Products_From_subcategory(cursor, sub_categories):
     """
