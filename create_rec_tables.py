@@ -517,7 +517,7 @@ def collaborative_filtering(cursor):
     print('Inserted subcats')
 
     # Here we get 2 users for each sub category to use for comparing.
-    twoUsers_For_each_subCategory = get_two_users_for_every_SubCategory(cursor)
+    twoUsers_For_each_subCategory = get_two_users_for_every_SubCategory(cursor,sub_categories)
     print("2 users for every subCategory collected")
 
     # Here we create the table to insert all the sub categorys with their 2 user ids
