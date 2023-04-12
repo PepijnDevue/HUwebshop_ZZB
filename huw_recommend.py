@@ -276,31 +276,59 @@ class Recom_shopping_cart_collab(Resource):
             Tuple with product id's and API response code
                 example: (['32522', '6910', '2537', '5844'], 200)
         """
-        # Query that gets 4 product_ids from the data base out of the table profile_recommendation based on the profile_id
-        query = """SELECT rec1_product_id,rec2_product_id,rec3_product_id,rec4_product_id 
-                    FROM profile_recommendation 
-                    WHERE profile_id = %s;
-                """
-        # Here we execute the query with the value of the profile_id
-        cursor.execute(query,(profile_id,))
-        # Here we fetch the result from the above cursor execute.
-        result = cursor.fetchall()
-        
-        # Here we check if the result is empty.
-        # If its not we continue with the product ids that have been fetched from the query.
-        if len(result) > 0:  
-        # Products ids are being put in a list instead of the tuple they come in when you use fetch 
-            product_ids = [product_id for product_id in result[0]]
 
-        # If the list is empty we recommend 4 random products
+        query_one = f"""SELECT temp.sub_category
+                    FROM (
+                        SELECT prev_recommended.user_profile_id, product.sub_category, COUNT(*) as total_recommendations,
+                        ROW_NUMBER() OVER (PARTITION BY prev_recommended.user_profile_id ORDER BY COUNT(*) DESC) as rn
+                        FROM prev_recommended
+                        INNER JOIN product ON prev_recommended.product_id = product._id
+                        GROUP BY prev_recommended.user_profile_id, product.sub_category
+                    ) AS temp
+                    WHERE temp.rn = 1 and temp.user_profile_id = '{profile_id}'
+				    ORDER BY temp.total_recommendations;
+                    """
+
+        cursor.execute(query_one)
+
+        sub_category = cursor.fetchall()
+
+        # print(sub_category)
+
+        query_two = f"""SELECT rec1_profile_id,rec2_profile_id FROM top_subcategory_users
+                        WHERE sub_category = '{sub_category[0][0]}'
+                    """
+
+        cursor.execute(query_two)
+
+        two_compare_userids = cursor.fetchall()
+
+        compareID = ""
+
+        # print(two_compare_userids)
+
+        if profile_id == two_compare_userids[0][0]:
+            compareID = two_compare_userids[0][1]
+            # print(compareID)
         else:
-            cursor.execute("SELECT _id FROM product WHERE recommendable = true AND discount = true ORDER BY random() limit 4")
+            compareID = two_compare_userids[0][0]
+            # print(compareID)
+
+        if compareID != "":
+            query_three = f"""SELECT prev_recommended.product_id
+	                          FROM prev_recommended
+	                          INNER JOIN product
+	                          ON prev_recommended.product_id = product._id
+	                          WHERE prev_recommended.user_profile_id = '{compareID}' AND product.recommendable = TRUE
+	                          ORDER BY RANDOM() LIMIT 4;
+                        """
+            
+            cursor.execute(query_three)
             result = cursor.fetchall()
-            # Products ids are being put in a list instead of the tuple they come in when you use fetch 
+
             product_ids = [product_id[0] for product_id in result]
-        
-        # Returns the product_ids and a api response code inside a tuple
-        return(product_ids,200)
+
+            return(product_ids,200)
     
 class Recom_shopping_cart_content(Resource):
     """This class represents the API that provides a recommendations for the
