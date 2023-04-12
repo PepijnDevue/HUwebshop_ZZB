@@ -373,7 +373,7 @@ def insert_into_profile_recommendation(cursor,linked_profiles):
             # Here we execute the query
         cursor.execute(query)
 
-def get_two_users_for_every_SubCategory(cursor, sub_categorys):
+def get_two_users_for_every_SubCategory(cursor,sub_categorys):
     """
     This function will get 2 users for every category this way we dont have to query alot since it already takes along time.
     We wil use this collection of users connect to category 
@@ -410,7 +410,7 @@ def get_two_users_for_every_SubCategory(cursor, sub_categorys):
 
 
 
-def create_top_subCategory_Users_Table(cursor,connection):
+def create_top_subCategory_Users_Table(cursor):
     """
     This function wil create a table for the 2 users per sub_category.
 
@@ -431,8 +431,27 @@ def create_top_subCategory_Users_Table(cursor,connection):
 
     # Execute the query
     cursor.execute(query)
-    # Commit the cursor query
-    connection.commit()
+
+def insert_top_subCategory_Users_Table(cursor,DictOfsubcategoryUsers):
+
+    for k,v in DictOfsubcategoryUsers.items():
+        
+        print(f"Key: {k} Values: {v}")
+        # print(v)
+        if len(v) == 0:
+            v = [(None,),(None,)]
+        elif len(v) == 1:
+            v.append((None,))
+
+        query = f"""INSERT INTO top_subCategory_users (
+                    sub_category, 
+                    rec1_profile_id, 
+                    rec2_profile_id ) 
+                    VALUES ('{k}','{v[0][0]}','{v[1][0]}')"""
+            
+            # Here we execute the query
+        cursor.execute(query)
+        
 
 def content_filtering(cursor):
     """
@@ -496,3 +515,5 @@ def collaborative_filtering(cursor):
     # We insert everything in to the profiles
     insert_into_profile_recommendation(cursor,linked_profiles)
     print('Inserted subcats')
+
+    twoUsers_For_each_subCategory = get_two_users_for_every_SubCategory(cursor)
