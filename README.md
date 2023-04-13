@@ -36,10 +36,11 @@ To run this code, you need to have the following programs and libraries installe
 
 In order to get this project to run, the following steps need to be completed:
 
-1. Set up the database, either locally or remotely;
+1. Set up the document database, either locally or remotely;
 2. Configure the environment variables for the local webshop and recommendation service;
-3. Start up the recommendation service;
-4. Start up the webshop.
+3. Set up the relational database;
+4. Start up the recommendation service;
+5. Start up the webshop.
 
 We will expand upon the process for each of these steps in the upcoming subsections.
 
@@ -116,6 +117,12 @@ To set this up easily from a Unix shell (which includes the Git Bash included wi
 Any variables you're not using, you can leave blank (e.g. <code>MONGODBSERVER=</code>).
 Note that the file must be called exactly <code>.env</code>. So technically, the file doesn't have a name, it only has an extension. 
 
+### Set up the relational database
+Download PGadmin and PostgreSQL and create a new database called 'huwebshop'
+In the workspace folder, create a file 'password.txt' and paste the PGadmin password in it.
+Run [data_tranfer.py](data_transfer.py)
+Run [add_to_pg.py](add_to_pg.py)
+Now you have everything set up to run the services.
 ### Start the Recommendation Service
 
 To run the recommendation service, you will need to open a terminal window and navigate to the top-level directory of this repository. If you have a Unix shell handy, you can run huw_recommend.sh (command line: <code>sh huw_recommend.sh</code>). If not, you need to perform the following commands (written for Windows, Command Prompt specifically):
