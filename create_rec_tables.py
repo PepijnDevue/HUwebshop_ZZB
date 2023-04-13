@@ -439,6 +439,7 @@ def create_profile_recommendation_table(cursor):
         None:
     """
 
+    # Here we make the query that we execute
     query = f"""DROP TABLE IF EXISTS profile_recommendation;
             CREATE TABLE IF NOT EXISTS profile_recommendation(
                 profile_id varchar(255),
@@ -463,16 +464,15 @@ def insert_into_profile_recommendation(cursor,linked_profiles):
         linked_profiles: a dict that has the profile_id linked 
     return
         None:
-    
-    
     """
         # Here we loop trough all the values and keys to make a query.
     for k,v in linked_profiles.items():
         
+        # it happens sometimes that their is no values and to keep the insert working we append a tuple full of Nones
         if v == "None":
             v = ("None","None","None","None","None")
 
-    
+        # Here we make the query that needs to be inserted it changes every loop
         query = f"""INSERT INTO profile_recommendation (
                     profile_id, 
                     rec1_product_id, 
@@ -482,7 +482,7 @@ def insert_into_profile_recommendation(cursor,linked_profiles):
                     rec5_product_id) 
                     VALUES ('{k}','{v[0]}','{v[1]}','{v[2]}','{v[3]}','{v[4]}')"""
             
-            # Here we execute the query
+        # Here we execute the query
         cursor.execute(query)
 
 def get_two_users_for_every_SubCategory(cursor,sub_categorys):
@@ -497,11 +497,13 @@ def get_two_users_for_every_SubCategory(cursor,sub_categorys):
         users_subCategory: a dict with the subCategory as key and the 2 profile ids as values linked to that sub_category 
 
     """
-
+    # Creates a empty dictionary to be filled later on.
     subCategory_Users = {}
 
+    # We Loop trough all the sub categories
     for subCategory in sub_categorys:
-        print(subCategory)
+
+        # We make a query for all the sub categories to gather 2 profile ids for them
         query = f"""SELECT temp.user_profile_id
                     FROM (
                         SELECT prev_recommended.user_profile_id, product.sub_category, COUNT(*) as total_recommendations,
@@ -514,10 +516,13 @@ def get_two_users_for_every_SubCategory(cursor,sub_categorys):
 				    ORDER BY temp.total_recommendations DESC LIMIT 2;
                 """
         
+        # Here we execute the query.
         cursor.execute(query)
 
+        # Makes a key that is the sub category and as values it puts the profile ids on to the specific sub category key.
         subCategory_Users[subCategory] = cursor.fetchall()
 
+    # Here we return the dictionary
     return subCategory_Users
 
 
@@ -533,6 +538,7 @@ def create_top_subCategory_Users_Table(cursor):
         None
     """
 
+    # The query that creates the table.
     query = f"""DROP TABLE IF EXISTS top_subCategory_users;
             CREATE TABLE top_subCategory_users(
                 sub_category varchar(255),
@@ -545,23 +551,35 @@ def create_top_subCategory_Users_Table(cursor):
     cursor.execute(query)
 
 def insert_top_subCategory_Users_Table(cursor,DictOfsubcategoryUsers):
+    """
+    The function insert_top_subCategory_Users_Table wil be used to insert our information in to the table top_subCategory_Users.
 
+    Parameters:
+        cursor: The cursor will be used to execute the query's
+        DictOfsubcategoryUsers: A dictionary with a sub_category as keys with 2 profiles connected to it
+    return
+        None
+    
+    """
+
+    # Loops trough all the keys with their values
     for k,v in DictOfsubcategoryUsers.items():
-        
-        print(f"Key: {k} Values: {v}")
-        # print(v)
+
+        # Checks if the value is empty and if it is appends a none value so the insert does not break
         if len(v) == 0:
             v = [(None,),(None,)]
+        # Checks if the value is add least the size of 1 and then adds 1 extra none to keep the insert running
         elif len(v) == 1:
             v.append((None,))
 
+        # The query that wil be executed with the new values every loop.
         query = f"""INSERT INTO top_subCategory_users (
                     sub_category, 
                     rec1_profile_id, 
                     rec2_profile_id ) 
                     VALUES ('{k}','{v[0][0]}','{v[1][0]}')"""
             
-            # Here we execute the query
+        # Here we execute the query
         cursor.execute(query)
         
 
